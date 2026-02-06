@@ -1,10 +1,10 @@
 import { View, Text, FlatList, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../constants/colors";
-import type { RankingWithProfile } from "../types";
+import type { RankingEntry } from "../types";
 
 interface Props {
-  rankings: RankingWithProfile[];
+  rankings: RankingEntry[];
   currentUserId?: string;
 }
 
@@ -15,10 +15,10 @@ function getMedalColor(position: number): string | null {
   return null;
 }
 
-function RankingItem({ item, isMe }: { item: RankingWithProfile; isMe: boolean }) {
+function RankingItem({ item, isMe }: { item: RankingEntry; isMe: boolean }) {
   const medal = getMedalColor(item.rank_position ?? 0);
-  const displayName = item.profiles?.full_name ?? "Foydalanuvchi";
-  const avatarUrl = item.profiles?.avatar_url;
+  const displayName = item.full_name ?? "Foydalanuvchi";
+  const avatarUrl = item.avatar_url;
 
   return (
     <View style={[styles.row, isMe && styles.rowMe]}>

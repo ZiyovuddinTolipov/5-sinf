@@ -53,24 +53,27 @@ export function EditProfileModal({ visible, profile, userId, onClose, onSave }: 
   const uploadAvatar = async (uri: string) => {
     setUploading(true);
     try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const fileExt = uri.split(".").pop() ?? "jpg";
+      const fileExt = uri.split(".").pop()?.toLowerCase() ?? "jpg";
       const fileName = `${userId}-${Date.now()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+
+      const formData = new FormData();
+      formData.append("file", {
+        uri,
+        name: fileName,
+        type: `image/${fileExt === "jpg" ? "jpeg" : fileExt}`,
+      } as any);
 
       const { error: uploadError } = await supabase.storage
-        .from("lesson-pdfs")
-        .upload(filePath, blob, {
-          contentType: `image/${fileExt}`,
+        .from("avatars")
+        .upload(fileName, formData, {
           upsert: true,
         });
 
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage
-        .from("lesson-pdfs")
-        .getPublicUrl(filePath);
+        .from("avatars")
+        .getPublicUrl(fileName);
 
       setAvatarUri(data.publicUrl);
     } catch (error: any) {

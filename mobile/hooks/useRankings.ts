@@ -1,20 +1,18 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import type { RankingWithProfile } from "../types";
+import type { RankingEntry } from "../types";
 
 export function useRankings(limit = 20) {
-  const [rankings, setRankings] = useState<RankingWithProfile[]>([]);
+  const [rankings, setRankings] = useState<RankingEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetch = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("rankings")
-      .select("*, profiles(full_name, avatar_url)")
-      .order("rank_position", { ascending: true })
-      .limit(limit);
+    const { data } = await supabase.rpc("get_rankings_with_profiles", {
+      p_limit: limit,
+    });
 
-    setRankings((data ?? []) as RankingWithProfile[]);
+    setRankings((data ?? []) as RankingEntry[]);
     setLoading(false);
   };
 
@@ -26,7 +24,7 @@ export function useRankings(limit = 20) {
 }
 
 export function useMyRanking(userId: string | undefined) {
-  const [ranking, setRanking] = useState<RankingWithProfile | null>(null);
+  const [ranking, setRanking] = useState<RankingEntry | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetch = async () => {
@@ -36,13 +34,12 @@ export function useMyRanking(userId: string | undefined) {
     }
 
     setLoading(true);
-    const { data } = await supabase
-      .from("rankings")
-      .select("*, profiles(full_name, avatar_url)")
-      .eq("user_id", userId)
-      .single();
+    const { data } = await supabase.rpc("get_my_ranking", {
+      p_user_id: userId,
+    });
 
-    setRanking(data as RankingWithProfile | null);
+    const rows = data as RankingEntry[] | null;
+    setRanking(rows && rows.length > 0 ? rows[0] : null);
     setLoading(false);
   };
 

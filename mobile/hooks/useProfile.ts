@@ -32,8 +32,10 @@ export function useProfile(userId: string | undefined) {
 
     const { error } = await supabase
       .from("profiles")
-      .update(updates)
-      .eq("user_id", userId);
+      .upsert(
+        { user_id: userId, ...updates },
+        { onConflict: "user_id" }
+      );
 
     if (!error) {
       await fetch();

@@ -95,6 +95,13 @@ export type TestWithSubject = Test & {
   test_questions: { count: number }[];
 };
 
-export type RankingWithProfile = Ranking & {
-  profiles: { full_name: string | null; avatar_url: string | null } | null;
-};
+export interface RankingEntry {
+  id: string;
+  user_id: string;
+  total_points: number;
+  tests_taken: number;
+  rank_position: number | null;
+  updated_at: string;
+  full_name: string | null;
+  avatar_url: string | null;
+}
