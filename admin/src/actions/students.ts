@@ -112,8 +112,10 @@ export async function updateStudent(
   const supabase = createAdminClient();
   const { error } = await supabase
     .from("profiles")
-    .update({ full_name: validated.data.full_name })
-    .eq("user_id", id);
+    .upsert(
+      { user_id: id, full_name: validated.data.full_name },
+      { onConflict: "user_id" }
+    );
 
   if (error) return { error: { full_name: [error.message] } };
 
