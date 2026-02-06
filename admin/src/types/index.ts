@@ -1,4 +1,4 @@
-export type { Subject, Lesson, Test, TestQuestion, TestOption, UserLesson, UserTest, Ranking, AdminUser } from "./database";
+export type { Subject, Lesson, Test, TestQuestion, TestOption, UserLesson, UserTest, Ranking, AdminUser, Student } from "./database";
 
 import type { Subject, Lesson, Test, TestQuestion } from "./database";
 

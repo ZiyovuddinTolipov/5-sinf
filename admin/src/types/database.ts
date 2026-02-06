@@ -71,3 +71,13 @@ export interface AdminUser {
   user_id: string;
   created_at: string;
 }
+
+export interface Student {
+  id: string;
+  email: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  banned_until: string | null;
+  created_at: string;
+  last_sign_in_at: string | null;
+}

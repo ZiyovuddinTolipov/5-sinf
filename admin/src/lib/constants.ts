@@ -1,4 +1,4 @@
-import { BookOpen, FileText, ClipboardList, Trophy } from "lucide-react";
+import { BookOpen, FileText, ClipboardList, Trophy, Users } from "lucide-react";
 
 export const NAV_ITEMS = [
   {
@@ -15,6 +15,11 @@ export const NAV_ITEMS = [
     title: "Testlar",
     href: "/tests",
     icon: ClipboardList,
+  },
+  {
+    title: "O'quvchilar",
+    href: "/students",
+    icon: Users,
   },
   {
     title: "Reytinglar",
