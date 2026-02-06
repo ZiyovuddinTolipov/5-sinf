@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "5-Sinf",
+    "slug": "5-sinf",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "scheme": "sinf5",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2D89EF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sinf5.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2D89EF"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.sinf5.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-web-browser"
+    ]
+  }
+}
