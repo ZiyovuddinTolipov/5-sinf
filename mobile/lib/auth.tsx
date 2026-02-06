@@ -2,9 +2,21 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import type { Session, User } from "@supabase/supabase-js";
 import * as WebBrowser from "expo-web-browser";
-import { makeRedirectUri } from "expo-auth-session";
+import * as Linking from "expo-linking";
 
 WebBrowser.maybeCompleteAuthSession();
+
+function extractSessionFromUrl(url: string) {
+  const fragment = url.split("#")[1];
+  if (!fragment) return null;
+  const params = new URLSearchParams(fragment);
+  const access_token = params.get("access_token");
+  const refresh_token = params.get("refresh_token");
+  if (access_token && refresh_token) {
+    return { access_token, refresh_token };
+  }
+  return null;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -29,6 +41,17 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const url = Linking.useURL();
+
+  // Deep link orqali kelgan tokenlarni ushlash (OAuth redirect)
+  useEffect(() => {
+    if (url) {
+      const tokens = extractSessionFromUrl(url);
+      if (tokens) {
+        supabase.auth.setSession(tokens);
+      }
+    }
+  }, [url]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -56,13 +79,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    const redirectTo = makeRedirectUri({ scheme: "sinf5" });
+    const redirectTo = Linking.createURL("/");
+    console.log("Redirect URI:", redirectTo);
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo },
+      options: { redirectTo, skipBrowserRedirect: true },
     });
     if (data?.url) {
-      await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+      if (result.type === "success") {
+        const tokens = extractSessionFromUrl(result.url);
+        if (tokens) {
+          await supabase.auth.setSession(tokens);
+        }
+      }
     }
   };
 

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Plus } from "lucide-react";
 import { useTests } from "@/hooks/use-tests";
+import { useSubjects } from "@/hooks/use-subjects";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TestTable } from "@/components/tests/test-table";
@@ -11,7 +12,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TestsPage() {
   const [formOpen, setFormOpen] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState<string | "all">("all");
   const { data: tests, isLoading } = useTests();
+  const { data: subjects } = useSubjects();
+
+  const filteredTests = useMemo(() => {
+    if (!tests) return [];
+    if (selectedSubject === "all") return tests;
+    return tests.filter((t) => t.subject_id === selectedSubject);
+  }, [tests, selectedSubject]);
 
   return (
     <div className="space-y-6">
@@ -28,10 +37,42 @@ export default function TestsPage() {
         </Button>
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        <button
+          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            selectedSubject === "all"
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:bg-muted/80"
+          }`}
+          onClick={() => setSelectedSubject("all")}
+        >
+          Barchasi {tests ? `(${tests.length})` : ""}
+        </button>
+        {subjects?.map((s) => {
+          const count = tests?.filter((t) => t.subject_id === s.id).length ?? 0;
+          return (
+            <button
+              key={s.id}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                selectedSubject === s.id
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+              onClick={() => setSelectedSubject(s.id)}
+            >
+              {s.name} ({count})
+            </button>
+          );
+        })}
+      </div>
+
       <Card className="shadow-sm border-0 shadow-black/5">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-medium">
             Testlar ro&apos;yxati
+            {selectedSubject !== "all" && subjects
+              ? ` — ${subjects.find((s) => s.id === selectedSubject)?.name}`
+              : ""}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -42,7 +83,7 @@ export default function TestsPage() {
               ))}
             </div>
           ) : (
-            <TestTable tests={tests ?? []} />
+            <TestTable tests={filteredTests} />
           )}
         </CardContent>
       </Card>

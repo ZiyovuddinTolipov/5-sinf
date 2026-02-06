@@ -8,10 +8,13 @@ export function useRankings(limit = 20) {
 
   const fetch = async () => {
     setLoading(true);
-    const { data } = await supabase.rpc("get_rankings_with_profiles", {
+    const { data, error } = await supabase.rpc("get_rankings_with_profiles", {
       p_limit: limit,
     });
 
+    if (error) {
+      console.error("Rankings fetch error:", error.message);
+    }
     setRankings((data ?? []) as RankingEntry[]);
     setLoading(false);
   };
@@ -34,10 +37,13 @@ export function useMyRanking(userId: string | undefined) {
     }
 
     setLoading(true);
-    const { data } = await supabase.rpc("get_my_ranking", {
+    const { data, error } = await supabase.rpc("get_my_ranking", {
       p_user_id: userId,
     });
 
+    if (error) {
+      console.error("My ranking fetch error:", error.message);
+    }
     const rows = data as RankingEntry[] | null;
     setRanking(rows && rows.length > 0 ? rows[0] : null);
     setLoading(false);

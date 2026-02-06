@@ -1,0 +1,132 @@
+[
+  {
+    "topic": "1-Mavzu: Tarixga kirish",
+    "questions": [
+      {"test_id": "TEST_ID", "question": "Tarix fani nimani o'rganadi?", "options": [{"text": "Insoniyat o'tmishini", "label": "A"}, {"text": "Tabiatni", "label": "B"}, {"text": "Kelajakni", "label": "C"}, {"text": "Kosmosni", "label": "D"}], "correct_option": "A", "points": 1, "sort_order": 1},
+      {"test_id": "TEST_ID", "question": "Tarix otasi kim?", "options": [{"text": "Gerodot", "label": "A"}, {"text": "Arastu", "label": "B"}, {"text": "Sokrat", "label": "C"}, {"text": "Platon", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 2},
+      {"test_id": "TEST_ID", "question": "Numizmatika nimani o'rganadi?", "options": [{"text": "Tangalarni", "label": "A"}, {"text": "Yozuvlarni", "label": "B"}, {"text": "Xaritalarni", "label": "C"}, {"text": "Gerblarni", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 3},
+      {"test_id": "TEST_ID", "question": "Arxeologiya qanday fan?", "options": [{"text": "Qazishma fani", "label": "A"}, {"text": "Tilshunoslik", "label": "B"}, {"text": "Yulduzshunoslik", "label": "C"}, {"text": "Hayvonot dunyosi", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 4},
+      {"test_id": "TEST_ID", "question": "Bir asr necha yil?", "options": [{"text": "100 yil", "label": "A"}, {"text": "10 yil", "label": "B"}, {"text": "1000 yil", "label": "C"}, {"text": "50 yil", "label": "D"}], "correct_option": "A", "points": 1, "sort_order": 5},
+      {"test_id": "TEST_ID", "question": "Eng birinchi yozuv turi?", "options": [{"text": "Mixxat", "label": "A"}, {"text": "Lotin", "label": "B"}, {"text": "Kirill", "label": "C"}, {"text": "Iyeroglif", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 6},
+      {"test_id": "TEST_ID", "question": "Geraldi fani nimani o'rganadi?", "options": [{"text": "Gerblarni", "label": "A"}, {"text": "Skeletlarni", "label": "B"}, {"text": "Dengizlarni", "label": "C"}, {"text": "Tog'larni", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 7},
+      {"test_id": "TEST_ID", "question": "Eramizdan avvalgi yillar qanday sanaladi?", "options": [{"text": "Kamayib boradi", "label": "A"}, {"text": "Ko'payib boradi", "label": "B"}, {"text": "To'xtab qoladi", "label": "C"}, {"text": "Faqat juft sanaladi", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 8}
+    ]
+  },
+  {
+    "topic": "2-Mavzu: Ibtidoiy jamoa tuzumi",
+    "questions": [
+      {"test_id": "TEST_ID", "question": "Ibtidoiy odamlarning ilk mehnat quroli?", "options": [{"text": "Tosh", "label": "A"}, {"text": "Temir", "label": "B"}, {"text": "Mis", "label": "C"}, {"text": "Yog'och", "label": "D"}], "correct_option": "A", "points": 1, "sort_order": 1},
+      {"test_id": "TEST_ID", "question": "Teshiktosh g'ori qayerda?", "options": [{"text": "Surxondaryoda", "label": "A"}, {"text": "Toshkentda", "label": "B"}, {"text": "Samarqandda", "label": "C"}, {"text": "Xorazmda", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 2},
+      {"test_id": "TEST_ID", "question": "Olov qachon kashf etilgan?", "options": [{"text": "Ilk paleolitda", "label": "A"}, {"text": "Mezolitda", "label": "B"}, {"text": "Neolitda", "label": "C"}, {"text": "Eneolitda", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 3},
+      {"test_id": "TEST_ID", "question": "Ibtidoiy to'da nima?", "options": [{"text": "Eng qadimgi jamoa", "label": "A"}, {"text": "Davlat turi", "label": "B"}, {"text": "Armiya", "label": "C"}, {"text": "Savdogarlar guruhi", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 4},
+      {"test_id": "TEST_ID", "question": "O'zbekistondagi eng qadimgi odam manzili?", "options": [{"text": "Selungur", "label": "A"}, {"text": "Afrosiyob", "label": "B"}, {"text": "Varaxsha", "label": "C"}, {"text": "Poykent", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 5},
+      {"test_id": "TEST_ID", "question": "Kamalak va o'q qachon ixtiro qilingan?", "options": [{"text": "Mezolitda", "label": "A"}, {"text": "Paleolitda", "label": "B"}, {"text": "Neolitda", "label": "C"}, {"text": "Bronza davrida", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 6},
+      {"test_id": "TEST_ID", "question": "Urug' jamoasi nima asosida birlashgan?", "options": [{"text": "Qon-qarindoshlik", "label": "A"}, {"text": "Qo'shnichilik", "label": "B"}, {"text": "Boylik", "label": "C"}, {"text": "Din", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 7},
+      {"test_id": "TEST_ID", "question": "Mis-tosh davri qanday ataladi?", "options": [{"text": "Eneolit", "label": "A"}, {"text": "Paleolit", "label": "B"}, {"text": "Neolit", "label": "C"}, {"text": "Antropologiya", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 8}
+    ]
+  },
+  {
+    "topic": "3-Mavzu: Qadimgi Misr",
+    "questions": [
+      {"test_id": "TEST_ID", "question": "Misr podsholari qanday atalgan?", "options": [{"text": "Fir'avn", "label": "A"}, {"text": "Xon", "label": "B"}, {"text": "Sulton", "label": "C"}, {"text": "Shoh", "label": "D"}], "correct_option": "A", "points": 1, "sort_order": 1},
+      {"test_id": "TEST_ID", "question": "Misrdagi eng katta piramida?", "options": [{"text": "Xeops", "label": "A"}, {"text": "Xafra", "label": "B"}, {"text": "Mikerin", "label": "C"}, {"text": "Joser", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 2},
+      {"test_id": "TEST_ID", "question": "Misr qaysi daryo bo'yida?", "options": [{"text": "Nil", "label": "A"}, {"text": "Amazonka", "label": "B"}, {"text": "Amudaryo", "label": "C"}, {"text": "Yanszi", "label": "D"}], "correct_option": "A", "points": 1, "sort_order": 3},
+      {"test_id": "TEST_ID", "question": "Misr yozuvi nima deb ataladi?", "options": [{"text": "Iyeroglif", "label": "A"}, {"text": "Mixxat", "label": "B"}, {"text": "Alifbo", "label": "C"}, {"text": "Piktogramma", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 4},
+      {"test_id": "TEST_ID", "question": "Nil daryosining toshishini kimlar kuzatgan?", "options": [{"text": "Kahinlar", "label": "A"}, {"text": "Dehqonlar", "label": "B"}, {"text": "Qullar", "label": "C"}, {"text": "Askarlar", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 5},
+      {"test_id": "TEST_ID", "question": "Misr qog'ozi nima deb ataladi?", "options": [{"text": "Papirus", "label": "A"}, {"text": "Pergament", "label": "B"}, {"text": "Selyuloza", "label": "C"}, {"text": "Kelin", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 6},
+      {"test_id": "TEST_ID", "question": "Misrni kimlar bosib olgan?", "options": [{"text": "Forslar", "label": "A"}, {"text": "Arablar", "label": "B"}, {"text": "Ruslar", "label": "C"}, {"text": "Turklar", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 7},
+      {"test_id": "TEST_ID", "question": "Sfinks nima?", "options": [{"text": "Arslon tanali haykal", "label": "A"}, {"text": "Kema turi", "label": "B"}, {"text": "Saray nomi", "label": "C"}, {"text": "Qurol turi", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 8}
+    ]
+  },
+  {
+    "topic": "4-Mavzu: Ikki daryo oralig'i",
+    "questions": [
+      {"test_id": "TEST_ID", "question": "Ikki daryo oralig'i qayerda?", "options": [{"text": "Dajla va Furot", "label": "A"}, {"text": "Nil va Volga", "label": "B"}, {"text": "Hind va Gang", "label": "C"}, {"text": "Sirdaryo", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 1},
+      {"test_id": "TEST_ID", "question": "Hammurapi qonunlari qayerda yaratilgan?", "options": [{"text": "Bobil", "label": "A"}, {"text": "Misr", "label": "B"}, {"text": "Rim", "label": "C"}, {"text": "Yunoniston", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 2},
+      {"test_id": "TEST_ID", "question": "Shumerlar nima ixtiro qilgan?", "options": [{"text": "G'ildirakni", "label": "A"}, {"text": "Qog'ozni", "label": "B"}, {"text": "Kompasni", "label": "C"}, {"text": "Poroxni", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 3},
+      {"test_id": "TEST_ID", "question": "Bobil shahrining darvozasi nima deyilgan?", "options": [{"text": "Ishtar", "label": "A"}, {"text": "Piramida", "label": "B"}, {"text": "Zikkurat", "label": "C"}, {"text": "Panteon", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 4},
+      {"test_id": "TEST_ID", "question": "Eng qadimgi kutubxona kimniki bo'lgan?", "options": [{"text": "Ashshurbanipal", "label": "A"}, {"text": "Hammurapi", "label": "B"}, {"text": "Navuxodonosor", "label": "C"}, {"text": "Xeops", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 5},
+      {"test_id": "TEST_ID", "question": "Shumerlar ibodatxonasi?", "options": [{"text": "Zikkurat", "label": "A"}, {"text": "Masjid", "label": "B"}, {"text": "Cherkov", "label": "C"}, {"text": "Katedral", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 6},
+      {"test_id": "TEST_ID", "question": "Bobil qaysi davlat hududida?", "options": [{"text": "Iroq", "label": "A"}, {"text": "Misr", "label": "B"}, {"text": "Turkiya", "label": "C"}, {"text": "Eron", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 7},
+      {"test_id": "TEST_ID", "question": "Shumerlarning mixxati nima ustiga yozilgan?", "options": [{"text": "Loy lavhalarga", "label": "A"}, {"text": "Qog'ozga", "label": "B"}, {"text": "Yog'ochga", "label": "C"}, {"text": "Matoga", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 8}
+    ]
+  },
+  {
+    "topic": "5-Mavzu: Qadimgi Hindiston va Xitoy",
+    "questions": [
+      {"test_id": "TEST_ID", "question": "Budda dini qayerda paydo bo'lgan?", "options": [{"text": "Hindistonda", "label": "A"}, {"text": "Xitoyda", "label": "B"}, {"text": "Yaponiyada", "label": "C"}, {"text": "Misrda", "label": "D"}], "correct_option": "A", "points": 1, "sort_order": 1},
+      {"test_id": "TEST_ID", "question": "Buyuk Xitoy devori nega qurilgan?", "options": [{"text": "Hunlardan himoyalanish", "label": "A"}, {"text": "Suv toshqinidan", "label": "B"}, {"text": "Sayyohlar uchun", "label": "C"}, {"text": "Zinapoya sifatida", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 2},
+      {"test_id": "TEST_ID", "question": "Shaxmat vatani qayer?", "options": [{"text": "Hindiston", "label": "A"}, {"text": "Xitoy", "label": "B"}, {"text": "O'zbekiston", "label": "C"}, {"text": "Eron", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 3},
+      {"test_id": "TEST_ID", "question": "Xitoyda nima kashf qilingan?", "options": [{"text": "Porox va qog'oz", "label": "A"}, {"text": "G'ildirak", "label": "B"}, {"text": "Shisha", "label": "C"}, {"text": "Lotin yozuvi", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 4},
+      {"test_id": "TEST_ID", "question": "Hindistonliklar qaysi hayvonni muqaddas biladi?", "options": [{"text": "Sigir", "label": "A"}, {"text": "Fil", "label": "B"}, {"text": "Yo'lbars", "label": "C"}, {"text": "It", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 5},
+      {"test_id": "TEST_ID", "question": "Konfutsiy kim bo'lgan?", "options": [{"text": "Xitoylik faylasuf", "label": "A"}, {"text": "Hind podshosi", "label": "B"}, {"text": "Misr fir'avni", "label": "C"}, {"text": "Sarkarda", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 6},
+      {"test_id": "TEST_ID", "question": "Kasta nima?", "options": [{"text": "Ijtimoiy tabaqa", "label": "A"}, {"text": "Diniy kitob", "label": "B"}, {"text": "Shaharning nomi", "label": "C"}, {"text": "Ovqat turi", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 7},
+      {"test_id": "TEST_ID", "question": "Hindistondagi eng baland tog'?", "options": [{"text": "Himolay", "label": "A"}, {"text": "Pomir", "label": "B"}, {"text": "Tyan-Shan", "label": "C"}, {"text": "And", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 8}
+    ]
+  },
+  {
+    "topic": "6-Mavzu: O'rta Osiyo va Zardushtiylik",
+    "questions": [
+      {"test_id": "TEST_ID", "question": "Zardushtiylikning muqaddas kitobi?", "options": [{"text": "Avesto", "label": "A"}, {"text": "Injil", "label": "B"}, {"text": "Tavrot", "label": "C"}, {"text": "Veda", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 1},
+      {"test_id": "TEST_ID", "question": "Avesto qaysi hududda yaratilgan?", "options": [{"text": "Xorazm", "label": "A"}, {"text": "Misr", "label": "B"}, {"text": "Hindiston", "label": "C"}, {"text": "Rim", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 2},
+      {"test_id": "TEST_ID", "question": "Zardushtiylikda yaxshilik xudosi?", "options": [{"text": "Axuramazda", "label": "A"}, {"text": "Axriman", "label": "B"}, {"text": "Zevs", "label": "C"}, {"text": "Anubis", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 3},
+      {"test_id": "TEST_ID", "question": "Qadimgi Turon xalqlari?", "options": [{"text": "Saklar va massagetlar", "label": "A"}, {"text": "Rimliklar", "label": "B"}, {"text": "Xitoyliklar", "label": "C"}, {"text": "Greklar", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 4},
+      {"test_id": "TEST_ID", "question": "Massagetlar malikasi kim?", "options": [{"text": "To'maris", "label": "A"}, {"text": "Kleopatra", "label": "B"}, {"text": "Semiramida", "label": "C"}, {"text": "Bibi xonim", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 5},
+      {"test_id": "TEST_ID", "question": "Kir II ga qarshi kim kurashgan?", "options": [{"text": "To'maris", "label": "A"}, {"text": "Spitamen", "label": "B"}, {"text": "Mani", "label": "C"}, {"text": "Otabek", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 6},
+      {"test_id": "TEST_ID", "question": "Zardushtiylikda yomonlik xudosi?", "options": [{"text": "Axriman", "label": "A"}, {"text": "Mithra", "label": "B"}, {"text": "Zervan", "label": "C"}, {"text": "Anaxita", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 7},
+      {"test_id": "TEST_ID", "question": "Qadimgi Xorazm poytaxti?", "options": [{"text": "Tuproqqal'a", "label": "A"}, {"text": "Samarqand", "label": "B"}, {"text": "Andijon", "label": "C"}, {"text": "Namangan", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 8}
+    ]
+  },
+  {
+    "topic": "7-Mavzu: Qadimgi Yunoniston",
+    "questions": [
+      {"test_id": "TEST_ID", "question": "Olimpiada o'yinlari vatani?", "options": [{"text": "Yunoniston", "label": "A"}, {"text": "Italiya", "label": "B"}, {"text": "Fransiya", "label": "C"}, {"text": "Misr", "label": "D"}], "correct_option": "A", "points": 1, "sort_order": 1},
+      {"test_id": "TEST_ID", "question": "Eng oliy xudo Yunonistonda?", "options": [{"text": "Zevs", "label": "A"}, {"text": "Gades", "label": "B"}, {"text": "Poseydon", "label": "C"}, {"text": "Apollon", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 2},
+      {"test_id": "TEST_ID", "question": "Iliada va Odisseya muallifi?", "options": [{"text": "Gomer", "label": "A"}, {"text": "Eshil", "label": "B"}, {"text": "Gippokrat", "label": "C"}, {"text": "Arximed", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 3},
+      {"test_id": "TEST_ID", "question": "Polis nima?", "options": [{"text": "Shahar-davlat", "label": "A"}, {"text": "Militsiya", "label": "B"}, {"text": "Qonun", "label": "C"}, {"text": "Kema", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 4},
+      {"test_id": "TEST_ID", "question": "Demokratiya qayerda paydo bo'lgan?", "options": [{"text": "Afinada", "label": "A"}, {"text": "Spartada", "label": "B"}, {"text": "Rimda", "label": "C"}, {"text": "Bobilda", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 5},
+      {"test_id": "TEST_ID", "question": "Spartaliklar nimasi bilan mashhur?", "options": [{"text": "Harbiy tarbiya", "label": "A"}, {"text": "Savdo", "label": "B"}, {"text": "She'riyat", "label": "C"}, {"text": "Rassomlik", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 6},
+      {"test_id": "TEST_ID", "question": "Arximed qaysi soha olimi?", "options": [{"text": "Matematika", "label": "A"}, {"text": "Musiqa", "label": "B"}, {"text": "Tarix", "label": "C"}, {"text": "Adabiyot", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 7},
+      {"test_id": "TEST_ID", "question": "Afina poytaxti qaysi davlatda?", "options": [{"text": "Gretsiya", "label": "A"}, {"text": "Germaniya", "label": "B"}, {"text": "Ispaniya", "label": "C"}, {"text": "Bolgariya", "label": "D"}], "correct_option": "A", "points": 1, "sort_order": 8}
+    ]
+  },
+  {
+    "topic": "8-Mavzu: Aleksandr Makedonskiy",
+    "questions": [
+      {"test_id": "TEST_ID", "question": "Aleksandr Makedonskiy kimning shogirdi?", "options": [{"text": "Aristotel", "label": "A"}, {"text": "Platon", "label": "B"}, {"text": "Gerodot", "label": "C"}, {"text": "Pifagor", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 1},
+      {"test_id": "TEST_ID", "question": "Spitamen kimga qarshi kurashgan?", "options": [{"text": "Makedonskiyga", "label": "A"}, {"text": "Chingizxonga", "label": "B"}, {"text": "Doro I ga", "label": "C"}, {"text": "Neronshohga", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 2},
+      {"test_id": "TEST_ID", "question": "Makedonskiy O'rta Osiyoda qaysi shaharni vayron qildi?", "options": [{"text": "Marokanda", "label": "A"}, {"text": "Toshkent", "label": "B"}, {"text": "Xiva", "label": "C"}, {"text": "Buxoro", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 3},
+      {"test_id": "TEST_ID", "question": "Aleksandrning otasi?", "options": [{"text": "Filipp II", "label": "A"}, {"text": "Doro III", "label": "B"}, {"text": "Perikl", "label": "C"}, {"text": "Leonid", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 4},
+      {"test_id": "TEST_ID", "question": "Makedoniya qo'shini asosini nima tashkil etgan?", "options": [{"text": "Falanga", "label": "A"}, {"text": "Fil suvorilari", "label": "B"}, {"text": "Dengizchilar", "label": "C"}, {"text": "Kamonchilar", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 5},
+      {"test_id": "TEST_ID", "question": "Aleksandr necha yoshida vafot etgan?", "options": [{"text": "33 yosh", "label": "A"}, {"text": "50 yosh", "label": "B"}, {"text": "20 yosh", "label": "C"}, {"text": "45 yosh", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 6},
+      {"test_id": "TEST_ID", "question": "Makedonskiy qaysi shaharda vafot etgan?", "options": [{"text": "Bobil", "label": "A"}, {"text": "Rim", "label": "B"}, {"text": "Afina", "label": "C"}, {"text": "Samarqand", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 7},
+      {"test_id": "TEST_ID", "question": "Gaugamela jangi qachon bo'lgan?", "options": [{"text": "Mil. avv. 331-yil", "label": "A"}, {"text": "Mil. avv. 500-yil", "label": "B"}, {"text": "Mil. 200-yil", "label": "C"}, {"text": "Mil. avv. 100-yil", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 8}
+    ]
+  },
+  {
+    "topic": "9-Mavzu: Qadimgi Rim",
+    "questions": [
+      {"test_id": "TEST_ID", "question": "Rim shahriga kim asos solgan?", "options": [{"text": "Romul", "label": "A"}, {"text": "Rem", "label": "B"}, {"text": "Sesar", "label": "C"}, {"text": "Neron", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 1},
+      {"test_id": "TEST_ID", "question": "Gladiatorlar nima?", "options": [{"text": "Jangchi qullar", "label": "A"}, {"text": "Savdogarlar", "label": "B"}, {"text": "Faylasuflar", "label": "C"}, {"text": "Rassomlar", "label": "D"}], "correct_option": "A", "points": 1, "sort_order": 2},
+      {"test_id": "TEST_ID", "question": "Rimdagi eng katta tomoshagoh?", "options": [{"text": "Kolizey", "label": "A"}, {"text": "Panteon", "label": "B"}, {"text": "Forum", "label": "C"}, {"text": "Akropol", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 3},
+      {"test_id": "TEST_ID", "question": "Spartak kim bo'lgan?", "options": [{"text": "Qullar qo'zg'oloni rahbari", "label": "A"}, {"text": "Rim imperatori", "label": "B"}, {"text": "Yozuvchi", "label": "C"}, {"text": "Dengiz qaroqchisi", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 4},
+      {"test_id": "TEST_ID", "question": "Rim tili qaysi?", "options": [{"text": "Lotin", "label": "A"}, {"text": "Grek", "label": "B"}, {"text": "Arab", "label": "C"}, {"text": "Rus", "label": "D"}], "correct_option": "A", "points": 2, "sort_order": 5},
+      {"test_id": "TEST_ID", "question": "Gannibal qaysi davlat sarkardasi?", "options": [{"text": "Karfagen", "label": "A"}, {"text": "Misr", "label": "B"}, {"text": "Xitoy", "label": "C"}, {"text": "Rossiya", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 6},
+      {"test_id": "TEST_ID", "question": "Senat nima?", "options": [{"text": "Oqsoqollar kengashi", "label": "A"}, {"text": "Bozor nomi", "label": "B"}, {"text": "Kema turi", "label": "C"}, {"text": "Qo'shiq nomi", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 7},
+      {"test_id": "TEST_ID", "question": "Rim imperiyasi qachon quladi?", "options": [{"text": "476-yil", "label": "A"}, {"text": "100-yil", "label": "B"}, {"text": "1000-yil", "label": "C"}, {"text": "1945-yil", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 8}
+    ]
+  },
+  {
+    "topic": "10-Mavzu: Dovon va Qang' davlatlari",
+    "questions": [
+      {"test_id": "TEST_ID", "question": "Dovon davlati qayerda joylashgan?", "options": [{"text": "Farg'ona vodiysi", "label": "A"}, {"text": "Buxoro", "label": "B"}, {"text": "Xiva", "label": "C"}, {"text": "Toshkent", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 1},
+      {"test_id": "TEST_ID", "question": "Dovon davlati nimasi bilan mashhur?", "options": [{"text": "Samoviy tulpollar", "label": "A"}, {"text": "Kemalar", "label": "B"}, {"text": "Fillar", "label": "C"}, {"text": "Tog'lar", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 2},
+      {"test_id": "TEST_ID", "question": "Qang' davlati poytaxti?", "options": [{"text": "Bityan", "label": "A"}, {"text": "Ershi", "label": "B"}, {"text": "Marokanda", "label": "C"}, {"text": "Poykent", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 3},
+      {"test_id": "TEST_ID", "question": "Buyuk Ipak yo'li qachon shakllandi?", "options": [{"text": "Mil. avv. II asr", "label": "A"}, {"text": "Mil. X asr", "label": "B"}, {"text": "Kecha", "label": "C"}, {"text": "Mil. avv. X asr", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 4},
+      {"test_id": "TEST_ID", "question": "Dovon poytaxti?", "options": [{"text": "Ershi", "label": "A"}, {"text": "Bityan", "label": "B"}, {"text": "Niso", "label": "C"}, {"text": "Varaxsha", "label": "D"}], "correct_option": "A", "points": 4, "sort_order": 5},
+      {"test_id": "TEST_ID", "question": "Qadimgi Farg'onada nima ko'p yetishtirilgan?", "options": [{"text": "Bedaboshi va uzum", "label": "A"}, {"text": "Kartoshka", "label": "B"}, {"text": "Kofe", "label": "C"}, {"text": "Choy", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 6},
+      {"test_id": "TEST_ID", "question": "Qang' davlati qaysi daryo bo'yida?", "options": [{"text": "Sirdaryo", "label": "A"}, {"text": "Amudaryo", "label": "B"}, {"text": "Zarafshon", "label": "C"}, {"text": "Chirchiq", "label": "D"}], "correct_option": "A", "points": 3, "sort_order": 7},
+      {"test_id": "TEST_ID", "question": "Dovon davlatini kimlar tasvirlagan?", "options": [{"text": "Xitoy elchilari", "label": "A"}, {"text": "Rimliklar", "label": "B"}, {"text": "Misrliklar", "label": "C"}, {"text": "Hindlar", "label": "D"}], "correct_option": "A", "points": 5, "sort_order": 8}
+    ]
+  }
+]

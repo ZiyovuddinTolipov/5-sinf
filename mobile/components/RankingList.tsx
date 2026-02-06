@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../constants/colors";
 import type { RankingEntry } from "../types";
@@ -61,16 +61,15 @@ function RankingItem({ item, isMe }: { item: RankingEntry; isMe: boolean }) {
 
 export function RankingList({ rankings, currentUserId }: Props) {
   return (
-    <FlatList
-      data={rankings}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <RankingItem item={item} isMe={item.user_id === currentUserId} />
-      )}
-      contentContainerStyle={styles.list}
-      showsVerticalScrollIndicator={false}
-      scrollEnabled={false}
-    />
+    <View style={styles.list}>
+      {rankings.map((item) => (
+        <RankingItem
+          key={item.id}
+          item={item}
+          isMe={item.user_id === currentUserId}
+        />
+      ))}
+    </View>
   );
 }
 

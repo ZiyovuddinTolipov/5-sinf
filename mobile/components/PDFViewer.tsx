@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -10,6 +10,7 @@ import {
 import { WebView } from "react-native-webview";
 import { Ionicons } from "@expo/vector-icons";
 import * as Sharing from "expo-sharing";
+import * as WebBrowser from "expo-web-browser";
 import { Colors } from "../constants/colors";
 import { usePDFCache } from "../hooks/usePDFCache";
 import { useAuth } from "../lib/auth";
@@ -26,6 +27,14 @@ export function PDFViewer({ lessonId, pdfUrl, title, onClose }: Props) {
   const { localUri, downloading, progress, downloadPDF, clearCache } =
     usePDFCache(lessonId, pdfUrl, user?.id);
   const [webLoading, setWebLoading] = useState(true);
+  const [webError, setWebError] = useState(false);
+
+  // Auto-download PDF when opened
+  useEffect(() => {
+    if (!localUri && !downloading && pdfUrl) {
+      downloadPDF();
+    }
+  }, []);
 
   if (!pdfUrl) {
     return (
@@ -39,9 +48,9 @@ export function PDFViewer({ lessonId, pdfUrl, title, onClose }: Props) {
     );
   }
 
-  const viewUri = localUri
-    ? localUri
-    : `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+  const handleOpenInBrowser = async () => {
+    await WebBrowser.openBrowserAsync(pdfUrl);
+  };
 
   const handleShare = async () => {
     if (!localUri) return;
@@ -51,19 +60,15 @@ export function PDFViewer({ lessonId, pdfUrl, title, onClose }: Props) {
     }
   };
 
-  const handleDownloadToggle = () => {
-    if (localUri) {
-      Alert.alert(
-        "Keshni tozalash",
-        "Yuklab olingan faylni o'chirishni xohlaysizmi?",
-        [
-          { text: "Bekor qilish", style: "cancel" },
-          { text: "O'chirish", onPress: clearCache, style: "destructive" },
-        ]
-      );
-    } else {
-      downloadPDF();
-    }
+  const handleClearCache = () => {
+    Alert.alert(
+      "Keshni tozalash",
+      "Yuklab olingan faylni o'chirishni xohlaysizmi?",
+      [
+        { text: "Bekor qilish", style: "cancel" },
+        { text: "O'chirish", onPress: clearCache, style: "destructive" },
+      ]
+    );
   };
 
   return (
@@ -78,26 +83,19 @@ export function PDFViewer({ lessonId, pdfUrl, title, onClose }: Props) {
         </Text>
 
         <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.headerBtn} onPress={handleOpenInBrowser}>
+            <Ionicons name="open-outline" size={22} color={Colors.primary} />
+          </TouchableOpacity>
           {localUri && (
             <TouchableOpacity style={styles.headerBtn} onPress={handleShare}>
               <Ionicons name="share-outline" size={22} color={Colors.foreground} />
             </TouchableOpacity>
           )}
-          <TouchableOpacity
-            style={styles.headerBtn}
-            onPress={handleDownloadToggle}
-            disabled={downloading}
-          >
-            {downloading ? (
-              <ActivityIndicator size="small" color={Colors.primary} />
-            ) : (
-              <Ionicons
-                name={localUri ? "checkmark-circle" : "download-outline"}
-                size={22}
-                color={localUri ? Colors.success : Colors.primary}
-              />
-            )}
-          </TouchableOpacity>
+          {localUri && (
+            <TouchableOpacity style={styles.headerBtn} onPress={handleClearCache}>
+              <Ionicons name="checkmark-circle" size={22} color={Colors.success} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -107,23 +105,73 @@ export function PDFViewer({ lessonId, pdfUrl, title, onClose }: Props) {
         </View>
       )}
 
-      {webLoading && !downloading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-          <Text style={styles.loadingText}>PDF yuklanmoqda...</Text>
+      {localUri && !webError ? (
+        <>
+          {webLoading && (
+            <View style={styles.loadingOverlay}>
+              <ActivityIndicator size="large" color={Colors.primary} />
+              <Text style={styles.loadingText}>PDF yuklanmoqda...</Text>
+            </View>
+          )}
+          <WebView
+            source={{ uri: localUri }}
+            style={styles.webview}
+            originWhitelist={["*"]}
+            allowFileAccess={true}
+            allowFileAccessFromFileURLs={true}
+            onLoadStart={() => setWebLoading(true)}
+            onLoadEnd={() => setWebLoading(false)}
+            onError={() => {
+              setWebLoading(false);
+              setWebError(true);
+            }}
+          />
+        </>
+      ) : (
+        <View style={styles.fallback}>
+          {downloading ? (
+            <>
+              <ActivityIndicator size="large" color={Colors.primary} />
+              <Text style={styles.fallbackPercent}>
+                {Math.round(progress * 100)}%
+              </Text>
+              <Text style={styles.fallbackText}>PDF yuklanmoqda...</Text>
+            </>
+          ) : (
+            <>
+              <Ionicons
+                name="document-text-outline"
+                size={64}
+                color={Colors.mutedLight}
+              />
+              <Text style={styles.fallbackTitle}>{title ?? "PDF"}</Text>
+              <Text style={styles.fallbackText}>
+                PDFni brauzerda ochish uchun tugmani bosing
+              </Text>
+              <TouchableOpacity
+                style={styles.openBtn}
+                onPress={handleOpenInBrowser}
+              >
+                <Ionicons name="open-outline" size={20} color={Colors.white} />
+                <Text style={styles.openBtnText}>Brauzerda ochish</Text>
+              </TouchableOpacity>
+              {localUri && (
+                <TouchableOpacity
+                  style={styles.shareBtn}
+                  onPress={handleShare}
+                >
+                  <Ionicons
+                    name="share-outline"
+                    size={20}
+                    color={Colors.primary}
+                  />
+                  <Text style={styles.shareBtnText}>Ulashish</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          )}
         </View>
       )}
-
-      <WebView
-        source={{ uri: viewUri }}
-        style={styles.webview}
-        onLoadStart={() => setWebLoading(true)}
-        onLoadEnd={() => setWebLoading(false)}
-        onError={() => {
-          setWebLoading(false);
-          Alert.alert("Xatolik", "PDF yuklashda xatolik yuz berdi");
-        }}
-      />
     </View>
   );
 }
@@ -182,6 +230,59 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 14,
     color: Colors.muted,
+  },
+  fallback: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
+    gap: 12,
+  },
+  fallbackTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: Colors.foreground,
+    textAlign: "center",
+    marginTop: 8,
+  },
+  fallbackPercent: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: Colors.primary,
+  },
+  fallbackText: {
+    fontSize: 14,
+    color: Colors.muted,
+    textAlign: "center",
+  },
+  openBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
+    gap: 8,
+    marginTop: 12,
+  },
+  openBtnText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: Colors.white,
+  },
+  shareBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Colors.primaryLight,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
+    gap: 8,
+  },
+  shareBtnText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: Colors.primary,
   },
   error: {
     flex: 1,

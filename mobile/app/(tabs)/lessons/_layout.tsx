@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { Colors } from "../../../constants/colors";
 
-export default function TestsLayout() {
+export default function LessonsLayout() {
   return (
     <Stack
       screenOptions={{
@@ -11,9 +11,8 @@ export default function TestsLayout() {
         headerShadowVisible: false,
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Testlar" }} />
-      <Stack.Screen name="subject/[subjectId]" options={{ title: "Testlar" }} />
-      <Stack.Screen name="[id]" options={{ title: "Test" }} />
+      <Stack.Screen name="index" options={{ title: "Darsliklar" }} />
+      <Stack.Screen name="subject/[subjectId]" options={{ title: "Darsliklar" }} />
     </Stack>
   );
 }

@@ -13,11 +13,14 @@ export function useMyTestResults(userId: string | undefined, limit = 5) {
     }
 
     setLoading(true);
-    const { data } = await supabase.rpc("get_user_test_results", {
+    const { data, error } = await supabase.rpc("get_user_test_results", {
       p_user_id: userId,
       p_limit: limit,
     });
 
+    if (error) {
+      console.error("Test results fetch error:", error.message);
+    }
     setResults((data ?? []) as TestResult[]);
     setLoading(false);
   };

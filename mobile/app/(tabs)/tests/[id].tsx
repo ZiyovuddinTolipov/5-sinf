@@ -134,7 +134,7 @@ export default function TestScreen() {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.replace("/tests")}>
           <Text style={styles.backButtonText}>Testlarga qaytish</Text>
         </TouchableOpacity>
       </ScrollView>

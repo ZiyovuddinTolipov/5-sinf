@@ -16,8 +16,7 @@ import { Colors } from "../../../constants/colors";
 interface SubjectWithCount {
   id: string;
   name: string;
-  test_count: number;
-  active_count: number;
+  lesson_count: number;
 }
 
 const SUBJECT_ICONS: Record<string, string> = {
@@ -34,7 +33,6 @@ const SUBJECT_ICONS: Record<string, string> = {
   "Ingliz tili": "language",
   Biologiya: "leaf",
   Adabiyot: "book",
-  // Common fallbacks/alternatives
   "O'qish": "book",
   Ingliz: "language",
   Tabiat: "leaf",
@@ -46,16 +44,15 @@ function getIcon(name: string): string {
       return SUBJECT_ICONS[key];
     }
   }
-  return "clipboard";
+  return "book-outline";
 }
 
-export default function TestsScreen() {
+export default function LessonsScreen() {
   const [subjects, setSubjects] = useState<SubjectWithCount[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchSubjects = async () => {
     setLoading(true);
-    const now = new Date().toISOString();
 
     const { data: subjectsData } = await supabase
       .from("subjects")
@@ -67,25 +64,18 @@ export default function TestsScreen() {
       return;
     }
 
-    const { data: testsData } = await supabase
-      .from("tests")
-      .select("id, subject_id, start_time, end_time");
+    const { data: lessonsData } = await supabase
+      .from("lessons")
+      .select("id, subject_id");
 
-    const tests = testsData ?? [];
+    const lessons = lessonsData ?? [];
 
     const result: SubjectWithCount[] = subjectsData.map((s) => {
-      const subjectTests = tests.filter((t) => t.subject_id === s.id);
-      const activeTests = subjectTests.filter((t) => {
-        const start = new Date(t.start_time);
-        const end = new Date(t.end_time);
-        const now = new Date();
-        return now >= start && now <= end;
-      });
+      const subjectLessons = lessons.filter((l) => l.subject_id === s.id);
       return {
         id: s.id,
         name: s.name,
-        test_count: subjectTests.length,
-        active_count: activeTests.length,
+        lesson_count: subjectLessons.length,
       };
     });
 
@@ -111,7 +101,7 @@ export default function TestsScreen() {
 
       {subjects.length === 0 ? (
         <View style={styles.empty}>
-          <Ionicons name="school-outline" size={48} color={Colors.mutedLight} />
+          <Ionicons name="book-outline" size={48} color={Colors.mutedLight} />
           <Text style={styles.emptyText}>Fanlar topilmadi</Text>
         </View>
       ) : (
@@ -123,7 +113,7 @@ export default function TestsScreen() {
               activeOpacity={0.7}
               onPress={() =>
                 router.push({
-                  pathname: "/tests/subject/[subjectId]",
+                  pathname: "/lessons/subject/[subjectId]",
                   params: { subjectId: subject.id, subjectName: subject.name },
                 })
               }
@@ -139,16 +129,8 @@ export default function TestsScreen() {
                 {subject.name}
               </Text>
               <Text style={styles.cardCount}>
-                {subject.test_count} ta test
+                {subject.lesson_count} ta darslik
               </Text>
-              {subject.active_count > 0 && (
-                <View style={styles.activeBadge}>
-                  <View style={styles.activeDot} />
-                  <Text style={styles.activeText}>
-                    {subject.active_count} faol
-                  </Text>
-                </View>
-              )}
             </TouchableOpacity>
           ))}
         </View>
@@ -202,26 +184,6 @@ const styles = StyleSheet.create({
   cardCount: {
     fontSize: 13,
     color: Colors.muted,
-  },
-  activeBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.successLight,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
-    gap: 4,
-  },
-  activeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.success,
-  },
-  activeText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: Colors.success,
   },
   empty: {
     alignItems: "center",

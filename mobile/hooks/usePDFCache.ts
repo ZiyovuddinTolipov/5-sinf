@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import { File, Directory, Paths } from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { supabase } from "../lib/supabase";
+
+const CACHE_DIR = FileSystem.documentDirectory + "lesson-pdfs/";
 
 export function usePDFCache(
   lessonId: string,
@@ -11,8 +13,7 @@ export function usePDFCache(
   const [downloading, setDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const cacheDir = new Directory(Paths.document, "lesson-pdfs");
-  const localFile = new File(cacheDir, `${lessonId}.pdf`);
+  const localFilePath = CACHE_DIR + `${lessonId}.pdf`;
 
   useEffect(() => {
     checkCache();
@@ -20,8 +21,9 @@ export function usePDFCache(
 
   const checkCache = async () => {
     try {
-      if (localFile.exists) {
-        setLocalUri(localFile.uri);
+      const info = await FileSystem.getInfoAsync(localFilePath);
+      if (info.exists) {
+        setLocalUri(localFilePath);
       }
     } catch {
       // File doesn't exist
@@ -35,22 +37,30 @@ export function usePDFCache(
     setProgress(0);
 
     try {
-      if (!cacheDir.exists) {
-        cacheDir.create();
+      // Papka mavjudligini tekshirish
+      const dirInfo = await FileSystem.getInfoAsync(CACHE_DIR);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(CACHE_DIR, { intermediates: true });
       }
 
-      // Use fetch to download
-      const response = await fetch(pdfUrl);
-      const blob = await response.blob();
-      const arrayBuffer = await blob.arrayBuffer();
-      const uint8Array = new Uint8Array(arrayBuffer);
+      // Faylni yuklab olish
+      const downloadResult = await FileSystem.createDownloadResumable(
+        pdfUrl,
+        localFilePath,
+        {},
+        (downloadProgress) => {
+          const p =
+            downloadProgress.totalBytesWritten /
+            downloadProgress.totalBytesExpectedToWrite;
+          setProgress(p);
+        }
+      ).downloadAsync();
 
-      // Write to file using the new API
-      localFile.write(uint8Array);
-      setProgress(1);
-      setLocalUri(localFile.uri);
+      if (downloadResult?.uri) {
+        setLocalUri(downloadResult.uri);
+      }
 
-      // Track in user_lessons
+      // user_lessons da saqlash
       await supabase.from("user_lessons").upsert(
         {
           user_id: userId,
@@ -69,7 +79,7 @@ export function usePDFCache(
 
   const clearCache = async () => {
     try {
-      localFile.delete();
+      await FileSystem.deleteAsync(localFilePath, { idempotent: true });
       setLocalUri(null);
     } catch {
       // ignore
