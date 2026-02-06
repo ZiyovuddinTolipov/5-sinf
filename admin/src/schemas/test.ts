@@ -2,22 +2,11 @@ import { z } from "zod";
 
 export const testSchema = z
   .object({
-    subject_id: z.string().uuid("Fan tanlang"),
-    question: z
+    name: z
       .string()
-      .min(5, "Savol kamida 5 ta belgidan iborat bo'lishi kerak")
-      .max(500, "Savol 500 ta belgidan oshmasligi kerak"),
-    option_a: z.string().min(1, "A variant bo'sh bo'lmasligi kerak"),
-    option_b: z.string().min(1, "B variant bo'sh bo'lmasligi kerak"),
-    option_c: z.string().min(1, "C variant bo'sh bo'lmasligi kerak"),
-    option_d: z.string().min(1, "D variant bo'sh bo'lmasligi kerak"),
-    correct_option: z.enum(["A", "B", "C", "D"], {
-      message: "To'g'ri javobni tanlang",
-    }),
-    points: z
-      .number()
-      .min(1, "Ball 1 dan kam bo'lmasligi kerak")
-      .max(5, "Ball 5 dan oshmasligi kerak"),
+      .min(2, "Test nomi kamida 2 ta belgidan iborat bo'lishi kerak")
+      .max(200, "Test nomi 200 ta belgidan oshmasligi kerak"),
+    subject_id: z.string().uuid("Fan tanlang"),
     start_time: z.string().min(1, "Boshlanish vaqtini kiriting"),
     end_time: z.string().min(1, "Tugash vaqtini kiriting"),
   })
@@ -35,3 +24,23 @@ export const testSchema = z
   );
 
 export type TestFormValues = z.infer<typeof testSchema>;
+
+export const questionSchema = z.object({
+  question: z
+    .string()
+    .min(5, "Savol kamida 5 ta belgidan iborat bo'lishi kerak")
+    .max(500, "Savol 500 ta belgidan oshmasligi kerak"),
+  option_a: z.string().min(1, "A variant bo'sh bo'lmasligi kerak"),
+  option_b: z.string().min(1, "B variant bo'sh bo'lmasligi kerak"),
+  option_c: z.string().min(1, "C variant bo'sh bo'lmasligi kerak"),
+  option_d: z.string().min(1, "D variant bo'sh bo'lmasligi kerak"),
+  correct_option: z.enum(["A", "B", "C", "D"], {
+    message: "To'g'ri javobni tanlang",
+  }),
+  points: z
+    .number()
+    .min(1, "Ball 1 dan kam bo'lmasligi kerak")
+    .max(5, "Ball 5 dan oshmasligi kerak"),
+});
+
+export type QuestionFormValues = z.infer<typeof questionSchema>;

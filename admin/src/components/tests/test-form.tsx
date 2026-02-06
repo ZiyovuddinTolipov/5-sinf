@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { testSchema, type TestFormValues } from "@/schemas/test";
 import { useCreateTest, useUpdateTest } from "@/hooks/use-tests";
 import { useSubjects } from "@/hooks/use-subjects";
-import type { TestWithSubject, TestOption } from "@/types";
+import type { TestWithSubject } from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +22,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -30,25 +29,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 interface TestFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   test?: TestWithSubject | null;
-}
-
-function optionsToForm(options: TestOption[]) {
-  const map: Record<string, string> = { A: "", B: "", C: "", D: "" };
-  options.forEach((o) => (map[o.label] = o.text));
-  return {
-    option_a: map.A,
-    option_b: map.B,
-    option_c: map.C,
-    option_d: map.D,
-  };
 }
 
 function toLocalDatetime(iso: string) {
@@ -67,14 +53,8 @@ export function TestForm({ open, onOpenChange, test }: TestFormProps) {
   const form = useForm<TestFormValues>({
     resolver: zodResolver(testSchema),
     defaultValues: {
+      name: "",
       subject_id: "",
-      question: "",
-      option_a: "",
-      option_b: "",
-      option_c: "",
-      option_d: "",
-      correct_option: "A",
-      points: 1,
       start_time: "",
       end_time: "",
     },
@@ -82,26 +62,16 @@ export function TestForm({ open, onOpenChange, test }: TestFormProps) {
 
   useEffect(() => {
     if (test) {
-      const opts = optionsToForm(test.options);
       form.reset({
+        name: test.name,
         subject_id: test.subject_id,
-        question: test.question,
-        ...opts,
-        correct_option: test.correct_option,
-        points: test.points,
         start_time: toLocalDatetime(test.start_time),
         end_time: toLocalDatetime(test.end_time),
       });
     } else {
       form.reset({
+        name: "",
         subject_id: "",
-        question: "",
-        option_a: "",
-        option_b: "",
-        option_c: "",
-        option_d: "",
-        correct_option: "A",
-        points: 1,
         start_time: "",
         end_time: "",
       });
@@ -126,7 +96,7 @@ export function TestForm({ open, onOpenChange, test }: TestFormProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? "Testni tahrirlash" : "Yangi test qo'shish"}
@@ -134,6 +104,20 @@ export function TestForm({ open, onOpenChange, test }: TestFormProps) {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Test nomi</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Masalan: Matematika 1-bob testi" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="subject_id"
@@ -158,105 +142,6 @@ export function TestForm({ open, onOpenChange, test }: TestFormProps) {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="question"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Savol</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Savolni kiriting..."
-                      className="min-h-[80px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-3">
-              <Label>Variantlar</Label>
-              {(["A", "B", "C", "D"] as const).map((letter) => (
-                <FormField
-                  key={letter}
-                  control={form.control}
-                  name={
-                    `option_${letter.toLowerCase()}` as
-                      | "option_a"
-                      | "option_b"
-                      | "option_c"
-                      | "option_d"
-                  }
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-2">
-                        <span className="w-6 text-center font-medium">
-                          {letter})
-                        </span>
-                        <FormControl>
-                          <Input
-                            placeholder={`${letter} variant`}
-                            {...field}
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
-            </div>
-
-            <FormField
-              control={form.control}
-              name="correct_option"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>To&apos;g&apos;ri javob</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      className="flex gap-4"
-                    >
-                      {(["A", "B", "C", "D"] as const).map((letter) => (
-                        <div
-                          key={letter}
-                          className="flex items-center space-x-1"
-                        >
-                          <RadioGroupItem value={letter} id={`correct-${letter}`} />
-                          <Label htmlFor={`correct-${letter}`}>{letter}</Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="points"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ball (1-5)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min={1}
-                      max={5}
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

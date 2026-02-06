@@ -1,6 +1,6 @@
-export type { Subject, Lesson, Test, TestOption, UserLesson, UserTest, Ranking, AdminUser } from "./database";
+export type { Subject, Lesson, Test, TestQuestion, TestOption, UserLesson, UserTest, Ranking, AdminUser } from "./database";
 
-import type { Subject, Lesson, Test } from "./database";
+import type { Subject, Lesson, Test, TestQuestion } from "./database";
 
 export type SubjectWithCount = Subject & {
   lessons_count: number;
@@ -17,7 +17,10 @@ export type TestWithSubject = Test & {
   subjects: {
     name: string;
   } | null;
+  test_questions: { count: number }[];
 };
+
+export type TestQuestionRow = TestQuestion;
 
 export interface RankingEntry {
   id: string;

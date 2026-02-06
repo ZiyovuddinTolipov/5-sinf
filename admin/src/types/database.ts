@@ -16,12 +16,20 @@ export interface Lesson {
 export interface Test {
   id: string;
   subject_id: string;
+  name: string;
+  start_time: string;
+  end_time: string;
+  created_at: string;
+}
+
+export interface TestQuestion {
+  id: string;
+  test_id: string;
   question: string;
   options: TestOption[];
   correct_option: "A" | "B" | "C" | "D";
   points: number;
-  start_time: string;
-  end_time: string;
+  sort_order: number;
   created_at: string;
 }
 
@@ -42,7 +50,7 @@ export interface UserLesson {
 export interface UserTest {
   id: string;
   user_id: string;
-  test_id: string;
+  question_id: string;
   selected_option: "A" | "B" | "C" | "D";
   points_earned: number;
   ranking_position: number | null;

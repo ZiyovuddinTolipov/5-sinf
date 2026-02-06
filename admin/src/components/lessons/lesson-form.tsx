@@ -91,7 +91,7 @@ export function LessonForm({ open, onOpenChange, lesson }: LessonFormProps) {
       }
     } else {
       const result = await createLesson.mutateAsync(data);
-      if ("success" in result && result.data) {
+      if ("data" in result) {
         // Upload PDF if selected
         if (selectedFile) {
           const formData = new FormData();

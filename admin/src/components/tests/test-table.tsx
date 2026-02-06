@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Pencil, Trash2, Eye } from "lucide-react";
 import { format } from "date-fns";
 import type { TestWithSubject } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -47,7 +48,15 @@ function getTestStatus(startTime: string, endTime: string) {
   );
 }
 
+function getQuestionCount(test: TestWithSubject): number {
+  if (test.test_questions && test.test_questions.length > 0) {
+    return test.test_questions[0].count;
+  }
+  return 0;
+}
+
 export function TestTable({ tests }: TestTableProps) {
+  const router = useRouter();
   const [editTest, setEditTest] = useState<TestWithSubject | null>(null);
   const [deleteTest, setDeleteTest] = useState<TestWithSubject | null>(null);
 
@@ -57,12 +66,12 @@ export function TestTable({ tests }: TestTableProps) {
         <TableHeader>
           <TableRow>
             <TableHead className="w-12">#</TableHead>
-            <TableHead>Savol</TableHead>
+            <TableHead>Nomi</TableHead>
             <TableHead>Fan</TableHead>
-            <TableHead>Ball</TableHead>
+            <TableHead>Savollar</TableHead>
             <TableHead>Holat</TableHead>
             <TableHead>Vaqt oynasi</TableHead>
-            <TableHead className="w-24 text-right">Amallar</TableHead>
+            <TableHead className="w-32 text-right">Amallar</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -76,17 +85,20 @@ export function TestTable({ tests }: TestTableProps) {
             tests.map((test, index) => (
               <TableRow key={test.id}>
                 <TableCell className="text-muted-foreground">{index + 1}</TableCell>
-                <TableCell className="max-w-[250px] truncate font-medium">
-                  {test.question}
+                <TableCell
+                  className="max-w-[250px] truncate font-medium cursor-pointer hover:text-primary"
+                  onClick={() => router.push(`/tests/${test.id}`)}
+                >
+                  {test.name}
                 </TableCell>
                 <TableCell>
                   <Badge variant="secondary" className="font-normal">
-                    {test.subjects?.name ?? "—"}
+                    {test.subjects?.name ?? "\u2014"}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
-                    {test.points} ball
+                    {getQuestionCount(test)} ta savol
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -100,6 +112,15 @@ export function TestTable({ tests }: TestTableProps) {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => router.push(`/tests/${test.id}`)}
+                      title="Savollarni ko'rish"
+                    >
+                      <Eye className="h-4 w-4 text-primary" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"

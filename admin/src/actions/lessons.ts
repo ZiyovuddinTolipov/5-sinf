@@ -6,7 +6,11 @@ import { lessonSchema } from "@/schemas/lesson";
 import type { Lesson, LessonWithSubject } from "@/types";
 
 type ActionResult =
-  | { success: true; data?: Lesson }
+  | { success: true }
+  | { success?: never; error: Record<string, string[]> | string };
+
+type CreateResult =
+  | { success: true; data: Lesson }
   | { success?: never; error: Record<string, string[]> | string };
 
 export async function getLessons(): Promise<LessonWithSubject[]> {
@@ -23,7 +27,7 @@ export async function getLessons(): Promise<LessonWithSubject[]> {
 export async function createLesson(formData: {
   subject_id: string;
   title: string;
-}): Promise<ActionResult> {
+}): Promise<CreateResult> {
   const validated = lessonSchema.safeParse(formData);
   if (!validated.success) {
     return { error: validated.error.flatten().fieldErrors as Record<string, string[]> };

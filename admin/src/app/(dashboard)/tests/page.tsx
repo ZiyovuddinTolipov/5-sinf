@@ -19,7 +19,7 @@ export default function TestsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Testlar</h1>
           <p className="text-muted-foreground mt-1">
-            Test savollari va vaqt oynalarini boshqarish
+            Testlarni yarating va har bir test ichiga savollar qo&apos;shing
           </p>
         </div>
         <Button onClick={() => setFormOpen(true)}>
