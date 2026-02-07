@@ -23,6 +23,42 @@ export async function signInWithGoogle() {
   }
 }
 
+export async function signInWithEmail(email: string, password: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    return { error: "Email yoki parol noto'g'ri" };
+  }
+
+  // Check if user is admin
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Autentifikatsiyada xatolik yuz berdi" };
+  }
+
+  const adminClient = createAdminClient();
+  const { data: adminUser } = await adminClient
+    .from("admin_users")
+    .select("id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!adminUser) {
+    await supabase.auth.signOut();
+    return { error: "Sizda admin huquqi yo'q" };
+  }
+
+  redirect("/dashboard");
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
