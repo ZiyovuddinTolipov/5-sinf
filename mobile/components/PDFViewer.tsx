@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { Ionicons } from "@expo/vector-icons";
+import { Linking } from "react-native";
 import * as Sharing from "expo-sharing";
-import * as WebBrowser from "expo-web-browser";
 import { Colors } from "../constants/colors";
 import { usePDFCache } from "../hooks/usePDFCache";
 import { useAuth } from "../lib/auth";
@@ -51,7 +51,7 @@ export function PDFViewer({ lessonId, pdfUrl, title, onClose }: Props) {
 
   const handleOpenInBrowser = async () => {
     const url = resolveAssetUrl(pdfUrl);
-    if (url) await WebBrowser.openBrowserAsync(url);
+    if (url) await Linking.openURL(url);
   };
 
   const handleShare = async () => {
