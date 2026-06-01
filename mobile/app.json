@@ -35,10 +35,11 @@
     ],
     "extra": {
       "router": {},
+      "apiUrl": "https://admin-production-c751.up.railway.app",
       "eas": {
-        "projectId": "484c941e-f0b7-4577-bd98-871037824964"
-      },
-      "apiUrl": "https://admin-production-c751.up.railway.app"
-    }
+        "projectId": "2df3dd8c-efd5-4961-b8a6-61f2ae041d67"
+      }
+    },
+    "owner": "tolipov"
   }
 }
