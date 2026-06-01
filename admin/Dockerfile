@@ -4,7 +4,7 @@ FROM node:22-bookworm-slim AS base
 FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm install --no-audit --no-fund
+RUN rm -f package-lock.json && npm install --include=optional --no-audit --no-fund
 
 # Stage 2: build
 FROM base AS builder
@@ -18,7 +18,7 @@ RUN npm run build
 FROM base AS prod-deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm install --omit=dev --no-audit --no-fund && npm cache clean --force
+RUN rm -f package-lock.json && npm install --omit=dev --include=optional --no-audit --no-fund && npm cache clean --force
 
 # Stage 4: runner
 FROM base AS runner
