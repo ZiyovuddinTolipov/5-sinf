@@ -1,8 +1,5 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  output: "standalone",
-  outputFileTracingRoot: process.cwd(),
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   serverExternalPackages: [
     "better-auth",
     "@better-auth/kysely-adapter",

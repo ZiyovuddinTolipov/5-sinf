@@ -8,14 +8,24 @@ if (!url) {
   process.exit(1);
 }
 
+function needsSsl(connectionString) {
+  try {
+    const u = new URL(connectionString);
+    // Railway internal hostnames don't use SSL; proxy/external hosts do
+    if (u.hostname.endsWith(".railway.internal")) return false;
+    if (u.hostname === "localhost" || u.hostname === "127.0.0.1") return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const pool = new pg.Pool({
   connectionString: url,
-  ssl: url.includes("railway") ? { rejectUnauthorized: false } : undefined,
+  ssl: needsSsl(url) ? { rejectUnauthorized: false } : undefined,
 });
 
-const db = drizzle(pool);
-
 console.log("Running migrations...");
-await migrate(db, { migrationsFolder: "./drizzle" });
+await migrate(drizzle(pool), { migrationsFolder: "./drizzle" });
 console.log("Migrations complete");
 await pool.end();
