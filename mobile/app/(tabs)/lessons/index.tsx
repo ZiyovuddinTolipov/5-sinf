@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { supabase } from "../../../lib/supabase";
+import { api } from "../../../lib/api";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { Colors } from "../../../constants/colors";
 
@@ -53,34 +53,22 @@ export default function LessonsScreen() {
 
   const fetchSubjects = async () => {
     setLoading(true);
-
-    const { data: subjectsData } = await supabase
-      .from("subjects")
-      .select("id, name")
-      .order("name");
-
-    if (!subjectsData) {
-      setLoading(false);
-      return;
-    }
-
-    const { data: lessonsData } = await supabase
-      .from("lessons")
-      .select("id, subject_id");
-
-    const lessons = lessonsData ?? [];
-
-    const result: SubjectWithCount[] = subjectsData.map((s) => {
-      const subjectLessons = lessons.filter((l) => l.subject_id === s.id);
-      return {
+    try {
+      const [subjectsData, lessonsData] = await Promise.all([
+        api.get<{ id: string; name: string }[]>("/api/subjects"),
+        api.get<{ id: string; subject_id: string }[]>("/api/lessons"),
+      ]);
+      const result: SubjectWithCount[] = subjectsData.map((s) => ({
         id: s.id,
         name: s.name,
-        lesson_count: subjectLessons.length,
-      };
-    });
-
-    setSubjects(result);
-    setLoading(false);
+        lesson_count: lessonsData.filter((l) => l.subject_id === s.id).length,
+      }));
+      setSubjects(result);
+    } catch {
+      setSubjects([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

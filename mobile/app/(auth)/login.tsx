@@ -16,7 +16,7 @@ import { useAuth } from "../../lib/auth";
 import { Colors } from "../../constants/colors";
 
 export default function LoginScreen() {
-  const { signInWithEmail, signInWithGoogle } = useAuth();
+  const { signInWithEmail } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,12 +31,6 @@ export default function LoginScreen() {
     const { error } = await signInWithEmail(email, password);
     setLoading(false);
     if (error) Alert.alert("Xatolik", error);
-  };
-
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    await signInWithGoogle();
-    setLoading(false);
   };
 
   return (
@@ -54,23 +48,6 @@ export default function LoginScreen() {
           <Text style={styles.subtitle}>
             Elektron darslik va test tizimi
           </Text>
-        </View>
-
-        {/* Google Login */}
-        <TouchableOpacity
-          style={styles.googleButton}
-          onPress={handleGoogleLogin}
-          disabled={loading}
-        >
-          <Ionicons name="logo-google" size={20} color={Colors.white} />
-          <Text style={styles.googleButtonText}>Google bilan kirish</Text>
-        </TouchableOpacity>
-
-        {/* Divider */}
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>yoki</Text>
-          <View style={styles.dividerLine} />
         </View>
 
         {/* Email Login */}

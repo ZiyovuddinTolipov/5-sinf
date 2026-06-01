@@ -1,8 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { asc, eq } from "drizzle-orm";
+import { db } from "@/db";
+import { subjects } from "@/db/schema";
 import { subjectSchema } from "@/schemas/subject";
+import { requireAdmin } from "@/lib/admin";
 import type { Subject } from "@/types";
 
 type ActionResult =
@@ -10,32 +13,24 @@ type ActionResult =
   | { success?: never; error: Record<string, string[]> | string };
 
 export async function getSubjects(): Promise<Subject[]> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("subjects")
-    .select("*")
-    .order("created_at", { ascending: true });
-
-  if (error) throw new Error(error.message);
-  return data ?? [];
+  await requireAdmin();
+  return await db.select().from(subjects).orderBy(asc(subjects.created_at));
 }
 
 export async function createSubject(formData: { name: string }): Promise<ActionResult> {
+  await requireAdmin();
   const validated = subjectSchema.safeParse(formData);
   if (!validated.success) {
     return { error: validated.error.flatten().fieldErrors as Record<string, string[]> };
   }
 
-  const supabase = createAdminClient();
-  const { error } = await supabase
-    .from("subjects")
-    .insert({ name: validated.data.name });
-
-  if (error) {
-    if (error.code === "23505") {
+  try {
+    await db.insert(subjects).values({ name: validated.data.name });
+  } catch (err: unknown) {
+    if ((err as { code?: string })?.code === "23505") {
       return { error: { name: ["Bu nomdagi fan allaqachon mavjud"] } };
     }
-    return { error: { name: [error.message] } };
+    return { error: { name: [(err as Error).message] } };
   }
 
   revalidatePath("/subjects");
@@ -43,22 +38,19 @@ export async function createSubject(formData: { name: string }): Promise<ActionR
 }
 
 export async function updateSubject(id: string, formData: { name: string }): Promise<ActionResult> {
+  await requireAdmin();
   const validated = subjectSchema.safeParse(formData);
   if (!validated.success) {
     return { error: validated.error.flatten().fieldErrors as Record<string, string[]> };
   }
 
-  const supabase = createAdminClient();
-  const { error } = await supabase
-    .from("subjects")
-    .update({ name: validated.data.name })
-    .eq("id", id);
-
-  if (error) {
-    if (error.code === "23505") {
+  try {
+    await db.update(subjects).set({ name: validated.data.name }).where(eq(subjects.id, id));
+  } catch (err: unknown) {
+    if ((err as { code?: string })?.code === "23505") {
       return { error: { name: ["Bu nomdagi fan allaqachon mavjud"] } };
     }
-    return { error: { name: [error.message] } };
+    return { error: { name: [(err as Error).message] } };
   }
 
   revalidatePath("/subjects");
@@ -66,13 +58,12 @@ export async function updateSubject(id: string, formData: { name: string }): Pro
 }
 
 export async function deleteSubject(id: string): Promise<{ success: true } | { error: string }> {
-  const supabase = createAdminClient();
-  const { error } = await supabase.from("subjects").delete().eq("id", id);
-
-  if (error) {
-    return { error: error.message };
+  await requireAdmin();
+  try {
+    await db.delete(subjects).where(eq(subjects.id, id));
+  } catch (err) {
+    return { error: (err as Error).message };
   }
-
   revalidatePath("/subjects");
   return { success: true };
 }

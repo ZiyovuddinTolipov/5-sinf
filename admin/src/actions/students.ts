@@ -1,7 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { desc, eq, isNull, notInArray, sql } from "drizzle-orm";
+import { db } from "@/db";
+import { admin_users, profiles, session, user as userTable } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin";
 import {
   studentSchema,
   studentUpdateSchema,
@@ -15,150 +19,136 @@ type ActionResult =
   | { success?: never; error: Record<string, string[]> | string };
 
 export async function getStudents(): Promise<Student[]> {
-  const supabase = createAdminClient();
+  await requireAdmin();
 
-  // Get admin user IDs to filter them out
-  const { data: adminUsers } = await supabase
-    .from("admin_users")
-    .select("user_id");
-  const adminIds = new Set((adminUsers ?? []).map((a) => a.user_id));
-
-  // List all auth users
-  const { data: authData, error } = await supabase.auth.admin.listUsers({
-    perPage: 1000,
-  });
-  if (error) throw new Error(error.message);
-
-  // Get all profiles
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("user_id, full_name, avatar_url");
-  const profileMap = new Map(
-    (profiles ?? []).map((p) => [p.user_id, p])
+  const adminIds = (await db.select({ user_id: admin_users.user_id }).from(admin_users)).map(
+    (r) => r.user_id,
   );
 
-  // Filter out admin users and map to Student type
-  const students: Student[] = authData.users
-    .filter((u) => !adminIds.has(u.id))
-    .map((u) => {
-      const profile = profileMap.get(u.id);
-      return {
-        id: u.id,
-        email: u.email ?? "",
-        full_name: profile?.full_name ?? null,
-        avatar_url: profile?.avatar_url ?? null,
-        banned_until: u.banned_until ?? null,
-        created_at: u.created_at,
-        last_sign_in_at: u.last_sign_in_at ?? null,
-      };
+  const rows = await db
+    .select({
+      id: userTable.id,
+      email: userTable.email,
+      created_at: userTable.createdAt,
+      full_name: profiles.full_name,
+      avatar_url: profiles.avatar_url,
+      banned_until: profiles.banned_until,
+      last_sign_in_at: sql<string | null>`MAX(${session.createdAt})`.as("last_sign_in_at"),
     })
-    .sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
+    .from(userTable)
+    .leftJoin(profiles, eq(profiles.user_id, userTable.id))
+    .leftJoin(session, eq(session.userId, userTable.id))
+    .where(adminIds.length ? notInArray(userTable.id, adminIds) : isNull(userTable.id))
+    .groupBy(userTable.id, profiles.full_name, profiles.avatar_url, profiles.banned_until)
+    .orderBy(desc(userTable.createdAt));
 
-  return students;
+  return rows.map((r) => ({
+    id: r.id,
+    email: r.email,
+    full_name: r.full_name,
+    avatar_url: r.avatar_url,
+    banned_until: r.banned_until,
+    created_at: typeof r.created_at === "string" ? r.created_at : r.created_at.toISOString(),
+    last_sign_in_at: r.last_sign_in_at ?? null,
+  }));
 }
 
-export async function createStudent(
-  formData: StudentFormValues
-): Promise<ActionResult> {
+export async function createStudent(formData: StudentFormValues): Promise<ActionResult> {
+  await requireAdmin();
   const validated = studentSchema.safeParse(formData);
   if (!validated.success) {
-    return {
-      error: validated.error.flatten().fieldErrors as Record<string, string[]>,
-    };
+    return { error: validated.error.flatten().fieldErrors as Record<string, string[]> };
   }
 
-  const supabase = createAdminClient();
+  let userId: string;
+  try {
+    const res = await auth.api.signUpEmail({
+      body: {
+        email: validated.data.email,
+        password: validated.data.password,
+        name: validated.data.full_name,
+      },
+    });
+    userId = res.user.id;
+  } catch (err) {
+    return { error: { email: [(err as Error).message] } };
+  }
 
-  const { data: authData, error: authError } =
-    await supabase.auth.admin.createUser({
-      email: validated.data.email,
-      password: validated.data.password,
-      email_confirm: true,
+  await db
+    .insert(profiles)
+    .values({ user_id: userId, full_name: validated.data.full_name })
+    .onConflictDoUpdate({
+      target: profiles.user_id,
+      set: { full_name: validated.data.full_name, updated_at: sql`now()` },
     });
 
-  if (authError) return { error: { email: [authError.message] } };
-
-  // Update profile with full_name
-  if (authData.user) {
-    await supabase
-      .from("profiles")
-      .upsert(
-        {
-          user_id: authData.user.id,
-          full_name: validated.data.full_name,
-        },
-        { onConflict: "user_id" }
-      );
-  }
-
   revalidatePath("/students");
   return { success: true };
 }
 
-export async function updateStudent(
-  id: string,
-  formData: StudentUpdateValues
-): Promise<ActionResult> {
+export async function updateStudent(id: string, formData: StudentUpdateValues): Promise<ActionResult> {
+  await requireAdmin();
   const validated = studentUpdateSchema.safeParse(formData);
   if (!validated.success) {
-    return {
-      error: validated.error.flatten().fieldErrors as Record<string, string[]>,
-    };
+    return { error: validated.error.flatten().fieldErrors as Record<string, string[]> };
   }
 
-  const supabase = createAdminClient();
-  const { error } = await supabase
-    .from("profiles")
-    .upsert(
-      { user_id: id, full_name: validated.data.full_name },
-      { onConflict: "user_id" }
-    );
-
-  if (error) return { error: { full_name: [error.message] } };
-
-  revalidatePath("/students");
-  return { success: true };
-}
-
-export async function banStudent(
-  id: string
-): Promise<{ success: true } | { error: string }> {
-  const supabase = createAdminClient();
-  const { error } = await supabase.auth.admin.updateUserById(id, {
-    ban_duration: "876000h",
-  });
-
-  if (error) return { error: error.message };
+  try {
+    await db
+      .insert(profiles)
+      .values({ user_id: id, full_name: validated.data.full_name })
+      .onConflictDoUpdate({
+        target: profiles.user_id,
+        set: { full_name: validated.data.full_name, updated_at: sql`now()` },
+      });
+  } catch (err) {
+    return { error: { full_name: [(err as Error).message] } };
+  }
 
   revalidatePath("/students");
   return { success: true };
 }
 
-export async function unbanStudent(
-  id: string
-): Promise<{ success: true } | { error: string }> {
-  const supabase = createAdminClient();
-  const { error } = await supabase.auth.admin.updateUserById(id, {
-    ban_duration: "none",
-  });
-
-  if (error) return { error: error.message };
-
+export async function banStudent(id: string): Promise<{ success: true } | { error: string }> {
+  await requireAdmin();
+  try {
+    const farFuture = new Date("2099-12-31T23:59:59Z").toISOString();
+    await db
+      .insert(profiles)
+      .values({ user_id: id, banned_until: farFuture })
+      .onConflictDoUpdate({
+        target: profiles.user_id,
+        set: { banned_until: farFuture, updated_at: sql`now()` },
+      });
+    await db.delete(session).where(eq(session.userId, id));
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
   revalidatePath("/students");
   return { success: true };
 }
 
-export async function deleteStudent(
-  id: string
-): Promise<{ success: true } | { error: string }> {
-  const supabase = createAdminClient();
-  const { error } = await supabase.auth.admin.deleteUser(id);
+export async function unbanStudent(id: string): Promise<{ success: true } | { error: string }> {
+  await requireAdmin();
+  try {
+    await db
+      .update(profiles)
+      .set({ banned_until: null, updated_at: sql`now()` })
+      .where(eq(profiles.user_id, id));
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
+  revalidatePath("/students");
+  return { success: true };
+}
 
-  if (error) return { error: error.message };
-
+export async function deleteStudent(id: string): Promise<{ success: true } | { error: string }> {
+  await requireAdmin();
+  try {
+    await db.delete(userTable).where(eq(userTable.id, id));
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
   revalidatePath("/students");
   return { success: true };
 }

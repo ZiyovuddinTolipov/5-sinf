@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
-import type { TestWithSubject, TestQuestion } from "../types";
+import { api } from "../lib/api";
+import type { TestQuestion, TestWithSubject } from "../types";
 
 export function useTests(subjectId?: string) {
   const [tests, setTests] = useState<TestWithSubject[]>([]);
@@ -8,18 +8,15 @@ export function useTests(subjectId?: string) {
 
   const fetch = async () => {
     setLoading(true);
-    let query = supabase
-      .from("tests")
-      .select("*, subjects(name), test_questions(count)")
-      .order("created_at", { ascending: false });
-
-    if (subjectId) {
-      query = query.eq("subject_id", subjectId);
+    try {
+      const q = subjectId ? `?subject_id=${encodeURIComponent(subjectId)}` : "";
+      const data = await api.get<TestWithSubject[]>(`/api/tests${q}`);
+      setTests(data ?? []);
+    } catch {
+      setTests([]);
+    } finally {
+      setLoading(false);
     }
-
-    const { data } = await query;
-    setTests((data ?? []) as TestWithSubject[]);
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -35,15 +32,14 @@ export function useTestQuestions(testId: string) {
 
   const fetch = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("test_questions")
-      .select("*")
-      .eq("test_id", testId)
-      .order("sort_order")
-      .order("created_at");
-
-    setQuestions((data ?? []) as TestQuestion[]);
-    setLoading(false);
+    try {
+      const data = await api.get<TestQuestion[]>(`/api/tests/${testId}/questions`);
+      setQuestions(data ?? []);
+    } catch {
+      setQuestions([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

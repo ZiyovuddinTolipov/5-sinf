@@ -1,6 +1,7 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../constants/colors";
+import { resolveAssetUrl } from "../lib/api";
 import type { RankingEntry } from "../types";
 
 interface Props {
@@ -18,7 +19,7 @@ function getMedalColor(position: number): string | null {
 function RankingItem({ item, isMe }: { item: RankingEntry; isMe: boolean }) {
   const medal = getMedalColor(item.rank_position ?? 0);
   const displayName = item.full_name ?? "Foydalanuvchi";
-  const avatarUrl = item.avatar_url;
+  const avatarUrl = resolveAssetUrl(item.avatar_url);
 
   return (
     <View style={[styles.row, isMe && styles.rowMe]}>

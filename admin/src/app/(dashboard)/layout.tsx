@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { headers } from "next/headers";
+import { eq } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { db } from "@/db";
+import { admin_users } from "@/db/schema";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { Header } from "@/components/layout/header";
@@ -10,25 +13,17 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) redirect("/login");
 
-  if (!user) {
-    redirect("/login");
-  }
+  const [adminRow] = await db
+    .select({ id: admin_users.id })
+    .from(admin_users)
+    .where(eq(admin_users.user_id, session.user.id))
+    .limit(1);
 
-  // Admin check
-  const adminClient = createAdminClient();
-  const { data: adminUser } = await adminClient
-    .from("admin_users")
-    .select("id")
-    .eq("user_id", user.id)
-    .single();
-
-  if (!adminUser) {
-    await supabase.auth.signOut();
+  if (!adminRow) {
+    await auth.api.signOut({ headers: await headers() });
     redirect("/login?error=not_admin");
   }
 
@@ -36,7 +31,7 @@ export default async function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <Header userEmail={user.email} />
+        <Header userEmail={session.user.email} />
         <main className="flex-1 p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>

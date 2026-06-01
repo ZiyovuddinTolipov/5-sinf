@@ -4,7 +4,7 @@ import { useLocalSearchParams, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../../lib/auth";
 import { useTestQuestions } from "../../../hooks/useTests";
-import { supabase } from "../../../lib/supabase";
+import { api } from "../../../lib/api";
 import { QuestionView } from "../../../components/QuestionView";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { Colors } from "../../../constants/colors";
@@ -67,7 +67,7 @@ export default function TestScreen() {
           let correct = 0;
           let totalPoints = 0;
 
-          const inserts = questions.map((q) => {
+          const payload = questions.map((q) => {
             const selected = answers[q.id];
             const isCorrect = selected === q.correct_option;
             if (isCorrect) {
@@ -75,19 +75,20 @@ export default function TestScreen() {
               totalPoints += q.points;
             }
             return {
-              user_id: user.id,
               question_id: q.id,
               selected_option: selected,
               points_earned: isCorrect ? q.points : 0,
             };
           });
 
-          const { error } = await supabase.from("user_tests").insert(inserts);
-
-          if (error) {
-            Alert.alert("Xatolik", error.message.includes("unique")
-              ? "Siz bu testni allaqachon yechgansiz!"
-              : error.message
+          try {
+            await api.post("/api/user-tests", { answers: payload });
+          } catch (err) {
+            const message = (err as Error).message;
+            const status = (err as { status?: number }).status;
+            Alert.alert(
+              "Xatolik",
+              status === 409 ? "Siz bu testni allaqachon yechgansiz!" : message,
             );
             setSubmitting(false);
             return;

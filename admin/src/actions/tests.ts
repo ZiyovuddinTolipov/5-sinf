@@ -1,183 +1,242 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { testSchema, questionSchema, type TestFormValues, type QuestionFormValues } from "@/schemas/test";
-import type { TestWithSubject, TestQuestionRow, TestOption } from "@/types";
+import { asc, count, desc, eq } from "drizzle-orm";
+import { db } from "@/db";
+import { test_questions, tests, subjects } from "@/db/schema";
+import {
+  questionSchema,
+  testSchema,
+  type QuestionFormValues,
+  type TestFormValues,
+} from "@/schemas/test";
+import { requireAdmin } from "@/lib/admin";
+import type { TestQuestionRow, TestWithSubject, TestOption } from "@/types";
 
 type ActionResult =
   | { success: true }
   | { success?: never; error: Record<string, string[]> | string };
 
-// =============================================
-// Test CRUD (parent)
-// =============================================
+async function selectTestsWithCounts(): Promise<TestWithSubject[]> {
+  const rows = await db
+    .select({
+      id: tests.id,
+      subject_id: tests.subject_id,
+      name: tests.name,
+      start_time: tests.start_time,
+      end_time: tests.end_time,
+      created_at: tests.created_at,
+      subject_name: subjects.name,
+    })
+    .from(tests)
+    .leftJoin(subjects, eq(tests.subject_id, subjects.id))
+    .orderBy(desc(tests.created_at));
+
+  const counts = await db
+    .select({ test_id: test_questions.test_id, c: count(test_questions.id) })
+    .from(test_questions)
+    .groupBy(test_questions.test_id);
+  const countMap = new Map(counts.map((r) => [r.test_id, r.c]));
+
+  return rows.map((r) => ({
+    id: r.id,
+    subject_id: r.subject_id,
+    name: r.name,
+    start_time: r.start_time,
+    end_time: r.end_time,
+    created_at: r.created_at,
+    subjects: r.subject_name ? { name: r.subject_name } : null,
+    test_questions: [{ count: countMap.get(r.id) ?? 0 }],
+  }));
+}
 
 export async function getTests(): Promise<TestWithSubject[]> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("tests")
-    .select("*, subjects(name), test_questions(count)")
-    .order("created_at", { ascending: false });
-
-  if (error) throw new Error(error.message);
-  return (data ?? []) as TestWithSubject[];
+  await requireAdmin();
+  return selectTestsWithCounts();
 }
 
 export async function getTestById(id: string): Promise<TestWithSubject | null> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("tests")
-    .select("*, subjects(name), test_questions(count)")
-    .eq("id", id)
-    .single();
+  await requireAdmin();
+  const [r] = await db
+    .select({
+      id: tests.id,
+      subject_id: tests.subject_id,
+      name: tests.name,
+      start_time: tests.start_time,
+      end_time: tests.end_time,
+      created_at: tests.created_at,
+      subject_name: subjects.name,
+    })
+    .from(tests)
+    .leftJoin(subjects, eq(tests.subject_id, subjects.id))
+    .where(eq(tests.id, id))
+    .limit(1);
 
-  if (error) return null;
-  return data as TestWithSubject;
+  if (!r) return null;
+
+  const [{ c }] = await db
+    .select({ c: count(test_questions.id) })
+    .from(test_questions)
+    .where(eq(test_questions.test_id, id));
+
+  return {
+    id: r.id,
+    subject_id: r.subject_id,
+    name: r.name,
+    start_time: r.start_time,
+    end_time: r.end_time,
+    created_at: r.created_at,
+    subjects: r.subject_name ? { name: r.subject_name } : null,
+    test_questions: [{ count: c }],
+  };
 }
 
 export async function createTest(formData: TestFormValues): Promise<ActionResult> {
+  await requireAdmin();
   const validated = testSchema.safeParse(formData);
   if (!validated.success) {
     return { error: validated.error.flatten().fieldErrors as Record<string, string[]> };
   }
 
-  const supabase = createAdminClient();
-  const { error } = await supabase.from("tests").insert({
-    name: validated.data.name,
-    subject_id: validated.data.subject_id,
-    start_time: validated.data.start_time,
-    end_time: validated.data.end_time,
-  });
-
-  if (error) return { error: { name: [error.message] } };
+  try {
+    await db.insert(tests).values({
+      name: validated.data.name,
+      subject_id: validated.data.subject_id,
+      start_time: validated.data.start_time,
+      end_time: validated.data.end_time,
+    });
+  } catch (err) {
+    return { error: { name: [(err as Error).message] } };
+  }
 
   revalidatePath("/tests");
   return { success: true };
 }
 
 export async function updateTest(id: string, formData: TestFormValues): Promise<ActionResult> {
+  await requireAdmin();
   const validated = testSchema.safeParse(formData);
   if (!validated.success) {
     return { error: validated.error.flatten().fieldErrors as Record<string, string[]> };
   }
 
-  const supabase = createAdminClient();
-  const { error } = await supabase
-    .from("tests")
-    .update({
-      name: validated.data.name,
-      subject_id: validated.data.subject_id,
-      start_time: validated.data.start_time,
-      end_time: validated.data.end_time,
-    })
-    .eq("id", id);
-
-  if (error) return { error: { name: [error.message] } };
+  try {
+    await db
+      .update(tests)
+      .set({
+        name: validated.data.name,
+        subject_id: validated.data.subject_id,
+        start_time: validated.data.start_time,
+        end_time: validated.data.end_time,
+      })
+      .where(eq(tests.id, id));
+  } catch (err) {
+    return { error: { name: [(err as Error).message] } };
+  }
 
   revalidatePath("/tests");
   return { success: true };
 }
 
 export async function deleteTest(id: string): Promise<{ success: true } | { error: string }> {
-  const supabase = createAdminClient();
-  const { error } = await supabase.from("tests").delete().eq("id", id);
-
-  if (error) return { error: error.message };
-
+  await requireAdmin();
+  try {
+    await db.delete(tests).where(eq(tests.id, id));
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
   revalidatePath("/tests");
   return { success: true };
 }
 
-// =============================================
-// Test Questions CRUD (children)
-// =============================================
-
-function formToOptions(data: QuestionFormValues): TestOption[] {
+function formToOptions(d: QuestionFormValues): TestOption[] {
   return [
-    { label: "A", text: data.option_a },
-    { label: "B", text: data.option_b },
-    { label: "C", text: data.option_c },
-    { label: "D", text: data.option_d },
+    { label: "A", text: d.option_a },
+    { label: "B", text: d.option_b },
+    { label: "C", text: d.option_c },
+    { label: "D", text: d.option_d },
   ];
 }
 
 export async function getTestQuestions(testId: string): Promise<TestQuestionRow[]> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("test_questions")
-    .select("*")
-    .eq("test_id", testId)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: true });
-
-  if (error) throw new Error(error.message);
-  return (data ?? []) as TestQuestionRow[];
+  await requireAdmin();
+  const rows = await db
+    .select()
+    .from(test_questions)
+    .where(eq(test_questions.test_id, testId))
+    .orderBy(asc(test_questions.sort_order), asc(test_questions.created_at));
+  return rows as TestQuestionRow[];
 }
 
 export async function createQuestion(testId: string, formData: QuestionFormValues): Promise<ActionResult> {
+  await requireAdmin();
   const validated = questionSchema.safeParse(formData);
   if (!validated.success) {
     return { error: validated.error.flatten().fieldErrors as Record<string, string[]> };
   }
 
-  const supabase = createAdminClient();
+  try {
+    const [{ maxOrder }] = await db
+      .select({ maxOrder: count(test_questions.id) })
+      .from(test_questions)
+      .where(eq(test_questions.test_id, testId));
 
-  // Get current max sort_order
-  const { data: existing } = await supabase
-    .from("test_questions")
-    .select("sort_order")
-    .eq("test_id", testId)
-    .order("sort_order", { ascending: false })
-    .limit(1);
-
-  const nextOrder = existing && existing.length > 0 ? existing[0].sort_order + 1 : 0;
-
-  const { error } = await supabase.from("test_questions").insert({
-    test_id: testId,
-    question: validated.data.question,
-    options: formToOptions(validated.data),
-    correct_option: validated.data.correct_option,
-    points: validated.data.points,
-    sort_order: nextOrder,
-  });
-
-  if (error) return { error: { question: [error.message] } };
+    await db.insert(test_questions).values({
+      test_id: testId,
+      question: validated.data.question,
+      options: formToOptions(validated.data),
+      correct_option: validated.data.correct_option,
+      points: validated.data.points,
+      sort_order: maxOrder,
+    });
+  } catch (err) {
+    return { error: { question: [(err as Error).message] } };
+  }
 
   revalidatePath(`/tests/${testId}`);
   revalidatePath("/tests");
   return { success: true };
 }
 
-export async function updateQuestion(id: string, testId: string, formData: QuestionFormValues): Promise<ActionResult> {
+export async function updateQuestion(
+  id: string,
+  testId: string,
+  formData: QuestionFormValues,
+): Promise<ActionResult> {
+  await requireAdmin();
   const validated = questionSchema.safeParse(formData);
   if (!validated.success) {
     return { error: validated.error.flatten().fieldErrors as Record<string, string[]> };
   }
 
-  const supabase = createAdminClient();
-  const { error } = await supabase
-    .from("test_questions")
-    .update({
-      question: validated.data.question,
-      options: formToOptions(validated.data),
-      correct_option: validated.data.correct_option,
-      points: validated.data.points,
-    })
-    .eq("id", id);
-
-  if (error) return { error: { question: [error.message] } };
+  try {
+    await db
+      .update(test_questions)
+      .set({
+        question: validated.data.question,
+        options: formToOptions(validated.data),
+        correct_option: validated.data.correct_option,
+        points: validated.data.points,
+      })
+      .where(eq(test_questions.id, id));
+  } catch (err) {
+    return { error: { question: [(err as Error).message] } };
+  }
 
   revalidatePath(`/tests/${testId}`);
   return { success: true };
 }
 
-export async function deleteQuestion(id: string, testId: string): Promise<{ success: true } | { error: string }> {
-  const supabase = createAdminClient();
-  const { error } = await supabase.from("test_questions").delete().eq("id", id);
-
-  if (error) return { error: error.message };
-
+export async function deleteQuestion(
+  id: string,
+  testId: string,
+): Promise<{ success: true } | { error: string }> {
+  await requireAdmin();
+  try {
+    await db.delete(test_questions).where(eq(test_questions.id, id));
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
   revalidatePath(`/tests/${testId}`);
   revalidatePath("/tests");
   return { success: true };

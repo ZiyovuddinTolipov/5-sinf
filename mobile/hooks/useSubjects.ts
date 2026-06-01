@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { api } from "../lib/api";
 import type { Subject } from "../types";
 
 export function useSubjects() {
@@ -8,12 +8,14 @@ export function useSubjects() {
 
   const fetch = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("subjects")
-      .select("*")
-      .order("name");
-    setSubjects((data ?? []) as Subject[]);
-    setLoading(false);
+    try {
+      const data = await api.get<Subject[]>("/api/subjects");
+      setSubjects(data ?? []);
+    } catch {
+      setSubjects([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

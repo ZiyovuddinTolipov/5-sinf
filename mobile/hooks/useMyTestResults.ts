@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { api } from "../lib/api";
 import type { TestResult } from "../types";
 
 export function useMyTestResults(userId: string | undefined, limit = 5) {
@@ -11,18 +11,15 @@ export function useMyTestResults(userId: string | undefined, limit = 5) {
       setLoading(false);
       return;
     }
-
     setLoading(true);
-    const { data, error } = await supabase.rpc("get_user_test_results", {
-      p_user_id: userId,
-      p_limit: limit,
-    });
-
-    if (error) {
-      console.error("Test results fetch error:", error.message);
+    try {
+      const data = await api.get<TestResult[]>(`/api/me/test-results?limit=${limit}`);
+      setResults(data ?? []);
+    } catch {
+      setResults([]);
+    } finally {
+      setLoading(false);
     }
-    setResults((data ?? []) as TestResult[]);
-    setLoading(false);
   };
 
   useEffect(() => {

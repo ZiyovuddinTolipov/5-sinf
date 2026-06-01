@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "standalone",
+  outputFileTracingRoot: process.cwd(),
+  serverExternalPackages: [
+    "better-auth",
+    "@better-auth/kysely-adapter",
+    "kysely",
+    "drizzle-orm",
+    "pg",
+  ],
 };
 
 export default nextConfig;

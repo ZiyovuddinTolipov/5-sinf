@@ -17,6 +17,7 @@ import { TestResultCard } from "../../components/TestResultCard";
 import { EditProfileModal } from "../../components/EditProfileModal";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { Colors } from "../../constants/colors";
+import { resolveAssetUrl } from "../../lib/api";
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
@@ -61,7 +62,10 @@ export default function ProfileScreen() {
           onPress={() => setEditVisible(true)}
         >
           {profile?.avatar_url ? (
-            <Image source={{ uri: profile.avatar_url }} style={styles.avatarImage} />
+            <Image
+              source={{ uri: resolveAssetUrl(profile.avatar_url) ?? undefined }}
+              style={styles.avatarImage}
+            />
           ) : (
             <View style={styles.avatarPlaceholder}>
               <Text style={styles.avatarText}>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { api } from "../lib/api";
 import type { LessonWithSubject } from "../types";
 
 export function useLessons(subjectId?: string) {
@@ -8,18 +8,15 @@ export function useLessons(subjectId?: string) {
 
   const fetch = async () => {
     setLoading(true);
-    let query = supabase
-      .from("lessons")
-      .select("*, subjects(name)")
-      .order("created_at", { ascending: false });
-
-    if (subjectId) {
-      query = query.eq("subject_id", subjectId);
+    try {
+      const q = subjectId ? `?subject_id=${encodeURIComponent(subjectId)}` : "";
+      const data = await api.get<LessonWithSubject[]>(`/api/lessons${q}`);
+      setLessons(data ?? []);
+    } catch {
+      setLessons([]);
+    } finally {
+      setLoading(false);
     }
-
-    const { data } = await query;
-    setLessons((data ?? []) as LessonWithSubject[]);
-    setLoading(false);
   };
 
   useEffect(() => {

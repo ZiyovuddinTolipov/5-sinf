@@ -14,6 +14,7 @@ import * as WebBrowser from "expo-web-browser";
 import { Colors } from "../constants/colors";
 import { usePDFCache } from "../hooks/usePDFCache";
 import { useAuth } from "../lib/auth";
+import { resolveAssetUrl } from "../lib/api";
 
 interface Props {
   lessonId: string;
@@ -49,7 +50,8 @@ export function PDFViewer({ lessonId, pdfUrl, title, onClose }: Props) {
   }
 
   const handleOpenInBrowser = async () => {
-    await WebBrowser.openBrowserAsync(pdfUrl);
+    const url = resolveAssetUrl(pdfUrl);
+    if (url) await WebBrowser.openBrowserAsync(url);
   };
 
   const handleShare = async () => {

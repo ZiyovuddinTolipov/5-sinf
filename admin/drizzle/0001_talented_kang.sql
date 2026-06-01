@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "banned_until" timestamp with time zone;

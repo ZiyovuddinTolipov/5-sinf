@@ -13,7 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { Colors } from "../constants/colors";
-import { supabase } from "../lib/supabase";
+import { api, resolveAssetUrl } from "../lib/api";
 import type { Profile } from "../types";
 
 interface Props {
@@ -24,7 +24,7 @@ interface Props {
   onSave: (updates: { full_name: string; avatar_url: string | null }) => Promise<void>;
 }
 
-export function EditProfileModal({ visible, profile, userId, onClose, onSave }: Props) {
+export function EditProfileModal({ visible, profile, userId: _userId, onClose, onSave }: Props) {
   const [fullName, setFullName] = useState(profile?.full_name ?? "");
   const [avatarUri, setAvatarUri] = useState<string | null>(profile?.avatar_url ?? null);
   const [saving, setSaving] = useState(false);
@@ -54,30 +54,20 @@ export function EditProfileModal({ visible, profile, userId, onClose, onSave }: 
     setUploading(true);
     try {
       const fileExt = uri.split(".").pop()?.toLowerCase() ?? "jpg";
-      const fileName = `${userId}-${Date.now()}.${fileExt}`;
+      const fileName = `avatar-${Date.now()}.${fileExt}`;
+      const mime = `image/${fileExt === "jpg" ? "jpeg" : fileExt}`;
 
       const formData = new FormData();
       formData.append("file", {
         uri,
         name: fileName,
-        type: `image/${fileExt === "jpg" ? "jpeg" : fileExt}`,
-      } as any);
+        type: mime,
+      } as unknown as Blob);
 
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(fileName, formData, {
-          upsert: true,
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(fileName);
-
-      setAvatarUri(data.publicUrl);
-    } catch (error: any) {
-      Alert.alert("Xatolik", error.message ?? "Rasm yuklashda xatolik");
+      const res = await api.upload<{ url: string }>("/api/uploads/avatar", formData);
+      setAvatarUri(res.url);
+    } catch (err) {
+      Alert.alert("Xatolik", (err as Error).message ?? "Rasm yuklashda xatolik");
     } finally {
       setUploading(false);
     }
@@ -88,20 +78,18 @@ export function EditProfileModal({ visible, profile, userId, onClose, onSave }: 
       Alert.alert("Xatolik", "Ism va familiyani kiriting");
       return;
     }
-
     setSaving(true);
     try {
-      await onSave({
-        full_name: fullName.trim(),
-        avatar_url: avatarUri,
-      });
+      await onSave({ full_name: fullName.trim(), avatar_url: avatarUri });
       onClose();
-    } catch (error: any) {
-      Alert.alert("Xatolik", error.message ?? "Saqlashda xatolik");
+    } catch (err) {
+      Alert.alert("Xatolik", (err as Error).message ?? "Saqlashda xatolik");
     } finally {
       setSaving(false);
     }
   };
+
+  const displayAvatar = avatarUri ? resolveAssetUrl(avatarUri) : null;
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -120,8 +108,8 @@ export function EditProfileModal({ visible, profile, userId, onClose, onSave }: 
               onPress={pickImage}
               disabled={uploading}
             >
-              {avatarUri ? (
-                <Image source={{ uri: avatarUri }} style={styles.avatar} />
+              {displayAvatar ? (
+                <Image source={{ uri: displayAvatar }} style={styles.avatar} />
               ) : (
                 <View style={styles.avatarPlaceholder}>
                   <Ionicons name="person" size={40} color={Colors.mutedLight} />
@@ -192,24 +180,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.foreground,
-  },
-  content: {
-    padding: 20,
-    alignItems: "center",
-  },
-  avatarContainer: {
-    position: "relative",
-    marginBottom: 24,
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
+  title: { fontSize: 18, fontWeight: "700", color: Colors.foreground },
+  content: { padding: 20, alignItems: "center" },
+  avatarContainer: { position: "relative", marginBottom: 24 },
+  avatar: { width: 100, height: 100, borderRadius: 50 },
   avatarPlaceholder: {
     width: 100,
     height: 100,
@@ -242,15 +216,8 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: Colors.white,
   },
-  inputContainer: {
-    width: "100%",
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.muted,
-    marginBottom: 8,
-  },
+  inputContainer: { width: "100%" },
+  label: { fontSize: 13, fontWeight: "600", color: Colors.muted, marginBottom: 8 },
   input: {
     backgroundColor: Colors.background,
     borderRadius: 10,
@@ -261,11 +228,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  actions: {
-    flexDirection: "row",
-    gap: 12,
-    paddingHorizontal: 20,
-  },
+  actions: { flexDirection: "row", gap: 12, paddingHorizontal: 20 },
   cancelButton: {
     flex: 1,
     paddingVertical: 14,
@@ -273,11 +236,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     alignItems: "center",
   },
-  cancelText: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: Colors.foreground,
-  },
+  cancelText: { fontSize: 15, fontWeight: "600", color: Colors.foreground },
   saveButton: {
     flex: 1,
     paddingVertical: 14,
@@ -285,9 +244,5 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     alignItems: "center",
   },
-  saveText: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: Colors.white,
-  },
+  saveText: { fontSize: 15, fontWeight: "600", color: Colors.white },
 });

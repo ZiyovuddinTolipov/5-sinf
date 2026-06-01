@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { api } from "../lib/api";
 import type { RankingEntry } from "../types";
 
 export function useRankings(limit = 20) {
@@ -8,15 +8,14 @@ export function useRankings(limit = 20) {
 
   const fetch = async () => {
     setLoading(true);
-    const { data, error } = await supabase.rpc("get_rankings_with_profiles", {
-      p_limit: limit,
-    });
-
-    if (error) {
-      console.error("Rankings fetch error:", error.message);
+    try {
+      const data = await api.get<RankingEntry[]>(`/api/rankings?limit=${limit}`);
+      setRankings(data ?? []);
+    } catch {
+      setRankings([]);
+    } finally {
+      setLoading(false);
     }
-    setRankings((data ?? []) as RankingEntry[]);
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -35,18 +34,15 @@ export function useMyRanking(userId: string | undefined) {
       setLoading(false);
       return;
     }
-
     setLoading(true);
-    const { data, error } = await supabase.rpc("get_my_ranking", {
-      p_user_id: userId,
-    });
-
-    if (error) {
-      console.error("My ranking fetch error:", error.message);
+    try {
+      const data = await api.get<RankingEntry | null>("/api/rankings/me");
+      setRanking(data);
+    } catch {
+      setRanking(null);
+    } finally {
+      setLoading(false);
     }
-    const rows = data as RankingEntry[] | null;
-    setRanking(rows && rows.length > 0 ? rows[0] : null);
-    setLoading(false);
   };
 
   useEffect(() => {

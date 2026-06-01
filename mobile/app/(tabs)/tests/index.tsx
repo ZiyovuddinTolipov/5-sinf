@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { supabase } from "../../../lib/supabase";
+import { api } from "../../../lib/api";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { Colors } from "../../../constants/colors";
 
@@ -55,42 +55,36 @@ export default function TestsScreen() {
 
   const fetchSubjects = async () => {
     setLoading(true);
-    const now = new Date().toISOString();
+    try {
+      const [subjectsData, testsData] = await Promise.all([
+        api.get<{ id: string; name: string }[]>("/api/subjects"),
+        api.get<{ id: string; subject_id: string; start_time: string; end_time: string }[]>(
+          "/api/tests",
+        ),
+      ]);
 
-    const { data: subjectsData } = await supabase
-      .from("subjects")
-      .select("id, name")
-      .order("name");
-
-    if (!subjectsData) {
-      setLoading(false);
-      return;
-    }
-
-    const { data: testsData } = await supabase
-      .from("tests")
-      .select("id, subject_id, start_time, end_time");
-
-    const tests = testsData ?? [];
-
-    const result: SubjectWithCount[] = subjectsData.map((s) => {
-      const subjectTests = tests.filter((t) => t.subject_id === s.id);
-      const activeTests = subjectTests.filter((t) => {
-        const start = new Date(t.start_time);
-        const end = new Date(t.end_time);
-        const now = new Date();
-        return now >= start && now <= end;
+      const result: SubjectWithCount[] = subjectsData.map((s) => {
+        const subjectTests = testsData.filter((t) => t.subject_id === s.id);
+        const activeTests = subjectTests.filter((t) => {
+          const start = new Date(t.start_time);
+          const end = new Date(t.end_time);
+          const nowDate = new Date();
+          return nowDate >= start && nowDate <= end;
+        });
+        return {
+          id: s.id,
+          name: s.name,
+          test_count: subjectTests.length,
+          active_count: activeTests.length,
+        };
       });
-      return {
-        id: s.id,
-        name: s.name,
-        test_count: subjectTests.length,
-        active_count: activeTests.length,
-      };
-    });
 
-    setSubjects(result);
-    setLoading(false);
+      setSubjects(result);
+    } catch {
+      setSubjects([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
