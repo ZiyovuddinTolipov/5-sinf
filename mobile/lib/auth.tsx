@@ -31,9 +31,10 @@ const AuthContext = createContext<AuthContextType>({
   refresh: async () => {},
 });
 
-interface SessionResponse {
+interface SignInResponse {
   user: AppUser;
-  session: { token: string };
+  token?: string;
+  redirect?: boolean;
 }
 
 async function fetchMe(): Promise<AppUser | null> {
@@ -64,12 +65,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithEmail = async (email: string, password: string) => {
     try {
-      const res = await api.post<SessionResponse>("/api/auth/sign-in/email", {
+      const res = await api.post<SignInResponse>("/api/auth/sign-in/email", {
         email,
         password,
       });
-      if (res?.session?.token) await setToken(res.session.token);
-      setUser(res.user);
+      if (res?.token) await setToken(res.token);
+      if (res?.user) setUser(res.user);
       return { error: null };
     } catch (err) {
       return { error: (err as Error).message };
@@ -78,13 +79,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUpWithEmail = async (email: string, password: string, name?: string) => {
     try {
-      const res = await api.post<SessionResponse>("/api/auth/sign-up/email", {
+      const res = await api.post<SignInResponse>("/api/auth/sign-up/email", {
         email,
         password,
         name: name ?? email.split("@")[0],
       });
-      if (res?.session?.token) await setToken(res.session.token);
-      setUser(res.user);
+      if (res?.token) await setToken(res.token);
+      if (res?.user) setUser(res.user);
       return { error: null };
     } catch (err) {
       return { error: (err as Error).message };
