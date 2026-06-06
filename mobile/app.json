@@ -6,13 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "scheme": "sinf5",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#2D89EF"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.sinf5.app"
@@ -22,7 +16,6 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#2D89EF"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.sinf5.app"
     },
     "web": {
@@ -31,7 +24,15 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#2D89EF"
+        }
+      ]
     ],
     "extra": {
       "router": {},
