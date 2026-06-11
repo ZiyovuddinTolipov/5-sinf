@@ -66,8 +66,9 @@ export default function TestsScreen() {
       const result: SubjectWithCount[] = subjectsData.map((s) => {
         const subjectTests = testsData.filter((t) => t.subject_id === s.id);
         const activeTests = subjectTests.filter((t) => {
-          const start = new Date(t.start_time);
-          const end = new Date(t.end_time);
+          const parseTS = (s: string) => new Date(s.replace(" ", "T").replace(/([+-]\d{2})$/, "$1:00"));
+          const start = parseTS(t.start_time);
+          const end = parseTS(t.end_time);
           const nowDate = new Date();
           return nowDate >= start && nowDate <= end;
         });

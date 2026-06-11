@@ -16,6 +16,10 @@ import { LoadingSpinner } from "../../../../components/LoadingSpinner";
 import { Colors } from "../../../../constants/colors";
 import type { TestWithSubject } from "../../../../types";
 
+function parseTS(s: string): Date {
+  return new Date(s.replace(" ", "T").replace(/([+-]\d{2})$/, "$1:00"));
+}
+
 function groupTests(tests: TestWithSubject[]) {
   const now = new Date();
   const active: TestWithSubject[] = [];
@@ -23,8 +27,8 @@ function groupTests(tests: TestWithSubject[]) {
   const closed: TestWithSubject[] = [];
 
   for (const t of tests) {
-    const start = new Date(t.start_time);
-    const end = new Date(t.end_time);
+    const start = parseTS(t.start_time);
+    const end = parseTS(t.end_time);
     if (now < start) upcoming.push(t);
     else if (now <= end) active.push(t);
     else closed.push(t);

@@ -40,8 +40,8 @@ export function LessonCard({ lesson, onPress }: Props) {
       </View>
       {hasPdf ? (
         <View style={styles.pdfButton}>
-          <Ionicons name="eye" size={16} color={Colors.primary} />
-          <Text style={styles.pdfButtonText}>PDF</Text>
+          <Ionicons name="download-outline" size={16} color={Colors.primary} />
+          <Text style={styles.pdfButtonText}>Yuklab olish</Text>
         </View>
       ) : (
         <View style={styles.noPdf}>

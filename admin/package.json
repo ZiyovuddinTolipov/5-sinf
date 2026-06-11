@@ -12,7 +12,11 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed-admin": "tsx --env-file=.env.local scripts/seed-admin.ts",
-    "db:seed-demo": "tsx --env-file=.env.local scripts/seed-demo.ts"
+    "db:seed-demo": "tsx --env-file=.env.local scripts/seed-demo.ts",
+    "db:seed-tests": "tsx --env-file=.env.local scripts/seed-tests-json.ts",
+    "db:seed-per-subject": "tsx --env-file=.env.local scripts/seed-per-subject.ts",
+    "db:fix-dates": "tsx --env-file=.env.local scripts/fix-test-dates.ts",
+    "db:link-lessons": "tsx --env-file=.env.local scripts/link-lesson-files.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
